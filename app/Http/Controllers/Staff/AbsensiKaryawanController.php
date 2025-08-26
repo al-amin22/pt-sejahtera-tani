@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AbsensiKaryawan;
 use App\Models\Absensi;
 use App\Models\Karyawan;
+use Carbon\Carbon;
 
 class AbsensiKaryawanController extends Controller
 {
@@ -14,7 +15,7 @@ class AbsensiKaryawanController extends Controller
     {
         try {
             $absensiKaryawans = AbsensiKaryawan::with(['absensi', 'karyawan'])->get();
-            $absensis = Absensi::all();
+            $absensis = Absensi::whereDate('tanggal', Carbon::today())->get();
             $karyawans = Karyawan::all();
             return view('staff.absensi_karyawan.index', compact('absensiKaryawans', 'absensis', 'karyawans'));
         } catch (\Exception $e) {

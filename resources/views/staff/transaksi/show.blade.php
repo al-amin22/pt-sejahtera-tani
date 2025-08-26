@@ -86,7 +86,7 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $detail->nama_barang }}</td>
                             <td>
-                                <span class="badge {{ $detail->jenis == 'pemasukan' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                <span class="badge {{ $detail->jenis == 'pemasukan' ? 'bg-success' : 'bg-danger text-white' }}">
                                     {{ $detail->jenis == 'pemasukan' ? 'Pemasukan' : 'Pengeluaran' }}
                                 </span>
                             </td>

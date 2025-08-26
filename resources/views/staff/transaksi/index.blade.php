@@ -80,47 +80,11 @@
         <div class="col-12">
             <div class="card card-shadow border-0">
                 <div class="card-header bg-light">
-                    <h5 class="mb-0"><i class="fas fa-project-diagram me-2"></i>Visualisasi Alur Dana</h5>
+                    <h5 class="mb-0"><i class="fas fa-project-diagram me-2"></i>Visualisasi Alur Dana Di Aceh</h5>
                 </div>
                 <div class="card-body">
                     <div class="flow-chart">
-                        <div class="flow-node bg-china">
-                            <h6>China</h6>
-                            <div class="fw-bold">Rp {{ number_format($danaDariChina, 0, ',', '.') }}</div>
-                            <small>Investor</small>
-                        </div>
-                        <div class="flow-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                        <div class="flow-node bg-jambi">
-                            <h6>Jambi</h6>
-                            <div class="fw-bold">Rp {{ number_format($saldoJambi, 0, ',', '.') }}</div>
-                            <small>Saldo Jambi</small>
-                        </div>
-                        <div class="flow-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                        <div class="flow-node bg-aceh">
-                            <h6>Aceh</h6>
-                            <div class="fw-bold">Rp {{ number_format($saldoAceh, 0, ',', '.') }}</div>
-                            <small>Saldo Aceh</small>
-                        </div>
-                    </div>
-
-                    <div class="row text-center">
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded">
-                                <small class="text-muted d-block">Operasional Jambi</small>
-                                <span class="fw-bold text-danger">Rp {{ number_format($operasionalJambi, 0, ',', '.') }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="p-3 border rounded">
-                                <small class="text-muted d-block">Transfer Jambi ke Aceh</small>
-                                <span class="fw-bold text-info">Rp {{ number_format($transferAceh, 0, ',', '.') }}</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-12 mb-3">
                             <div class="p-3 border rounded">
                                 <small class="text-muted d-block">Operasional Aceh</small>
                                 <span class="fw-bold text-danger">Rp {{ number_format($operasionalAceh, 0, ',', '.') }}</span>
@@ -138,7 +102,7 @@
             <div class="filter-section">
                 <form method="GET" action="{{ route('staff.transaksi.index') }}">
                     <div class="row">
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-4 mb-2">
                             <label for="tahunFilter" class="form-label">Tahun</label>
                             <select class="form-select" id="tahunFilter" name="tahun">
                                 <option value="">Pilih Tahun</option>
@@ -147,7 +111,7 @@
                                 @endfor
                             </select>
                         </div>
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-4 mb-2">
                             <label for="bulanFilter" class="form-label">Bulan</label>
                             <select class="form-select" id="bulanFilter" name="bulan">
                                 <option value="">Semua Bulan</option>
@@ -158,16 +122,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3 mb-2">
-                            <label for="rekeningFilter" class="form-label">Rekening</label>
-                            <select class="form-select" id="rekeningFilter" name="rekening_id">
-                                <option value="">Semua Rekening</option>
-                                @foreach($rekening as $r)
-                                <option value="{{ $r->id }}" {{ $rekeningId == $r->id ? 'selected' : '' }}>{{ $r->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-3 mb-2 d-flex align-items-end">
+                        <div class="col-md-4 mb-2 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary w-100" id="terapkanFilter">
                                 <i class="fas fa-filter me-2"></i>Terapkan Filter
                             </button>
@@ -193,10 +148,6 @@
                             <th>Tanggal</th>
                             <th>Jenis</th>
                             <th>Nominal</th>
-                            <!-- <th>Rekening</th> -->
-                            <th>Transaksi China-Jambi</th>
-                            <th>Transaksi Jambi-Aceh</th>
-                            <th>Transaksi Jambi-Lainnya</th>
                             <th>Penginput</th>
                             <th style="width: 150px;">Aksi</th>
                         </tr>
@@ -248,57 +199,9 @@
                                     <span class="badge {{ $keColor }}">{{ $keRekening }}</span>
                                 </td> -->
                                 <td>
-                                    @php
-                                    $chinaToJambi = $item->details
-                                    ->where('dari_rekening_id', 1)
-                                    ->where('ke_rekening_id', 2)
-                                    ->sum('subtotal');
-                                    @endphp
-
-                                    @if($chinaToJambi > 0)
-                                    <span class="text-primary fw-bold">
-                                        Rp {{ number_format($chinaToJambi, 0, ',', '.') }}
-                                    </span>
-                                    @else
-                                    -
-                                    @endif
-                                </td>
-                                <td>
-                                    @php
-                                    $jambiToAceh = $item->details
-                                    ->where('dari_rekening_id', 2)
-                                    ->where('ke_rekening_id', 3)
-                                    ->sum('subtotal');
-                                    @endphp
-
-                                    @if($jambiToAceh > 0)
-                                    <span class="text-primary fw-bold">
-                                        Rp {{ number_format($jambiToAceh, 0, ',', '.') }}
-                                    </span>
-                                    @else
-                                    -
-                                    @endif
-                                </td>
-                                <td>
-                                    @php
-                                    $jambiToLainnya = $item->details
-                                    ->where('dari_rekening_id', 2)
-                                    ->where('ke_rekening_id', 4)
-                                    ->sum('subtotal');
-                                    @endphp
-
-                                    @if($jambiToLainnya > 0)
-                                    <span class="text-primary fw-bold">
-                                        Rp {{ number_format($jambiToLainnya, 0, ',', '.') }}
-                                    </span>
-                                    @else
-                                    -
-                                    @endif
-                                </td>
-                                <td>
                                     <span class="badge bg-secondary">
                                         <i class="fas fa-user me-1"></i>
-                                        {{ $item->user->name ?? 'Admin' }}
+                                        {{ $item->user->name ?? '-' }}
                                     </span>
                                 </td>
                                 <td>
@@ -326,8 +229,8 @@
                     <!-- Total Keseluruhan -->
                     <tfoot class="table-primary">
                         <tr>
-                            <th colspan="2">Total Keseluruhan</th>
-                            <th colspan="3">
+                            <th colspan="1">Total Keseluruhan</th>
+                            <th colspan="2">
                                 <span class="badge bg-success me-2">
                                     <i class="fas fa-arrow-down"></i>
                                     Rp {{ number_format($totalPemasukan, 0, ',', '.') }}
@@ -337,15 +240,7 @@
                                     Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}
                                 </span>
                             </th>
-                            <th>Saldo Akhir</th>
-                            <th class="{{ $saldoAkhir >= 0 ? 'saldo-positif' : 'saldo-negatif' }} fw-bold">
-                                <i class="fas fa-wallet me-1"></i>
-                                {{ $saldoAkhir >= 0 ? '+' : '' }}Rp {{ number_format(abs($saldoAkhir), 0, ',', '.') }}
-                                <br>
-                                <small>
-                                    {{ $saldoAkhir >= 0 ? 'Sisa uang' : 'Saldo Kurang' }}
-                                </small>
-                            </th>
+                            <th></th>
                             <th></th>
                         </tr>
                     </tfoot>
@@ -432,15 +327,11 @@
                             <table class="table table-bordered align-middle" id="detailTable">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Nama Barang</th>
-                                        <th>Jenis</th>
+                                        <th>Keterangan</th>
                                         <th>Jumlah</th>
                                         <th>Satuan</th>
                                         <th>Harga</th>
                                         <th>Subtotal</th>
-                                        <th>Dari Rekening</th>
-                                        <th>Ke Rekening</th>
-                                        <th>Keterangan</th>
                                         <th>Referensi</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -448,34 +339,13 @@
                                 <tbody id="detailBody">
                                     <tr>
                                         <td><input type="text" name="detail[0][nama_barang]" class="form-control" required></td>
-                                        <td>
-                                            <select name="detail[0][jenis]" class="form-select" required>
-                                                <option value="pemasukan">Pemasukan</option>
-                                                <option value="pengeluaran">Pengeluaran</option>
-                                            </select>
-                                        </td>
                                         <td><input type="number" name="detail[0][jumlah]" step="0.01" class="form-control jumlah" required></td>
                                         <td><input type="text" name="detail[0][satuan]" class="form-control"></td>
                                         <td><input type="number" step="0.01" name="detail[0][harga]" class="form-control harga" required></td>
                                         <td><input type="text" class="form-control subtotal" readonly></td>
-
-                                        <td>
-                                            <select name="detail[0][dari_rekening_id]" class="form-select" required>
-                                                @foreach($rekening as $rek)
-                                                <option value="{{ $rek->id }}">{{ $rek->nama ?? '-' }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select name="detail[0][ke_rekening_id]" class="form-select" required>
-                                                @foreach($rekening as $rek)
-                                                <option value="{{ $rek->id }}">{{ $rek->nama ?? '-' }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td><input type="text" name="detail[0][keterangan]" class="form-control"></td>
                                         <td><input type="file" name="detail[0][referensi]" class="form-control"></td>
                                         <td>
+                                            <input type="hidden" name="detail[0][jenis]" value="pengeluaran">
                                             <button type="button" class="btn btn-danger btn-sm removeRow">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -544,15 +414,11 @@
                             <table class="table table-bordered align-middle" id="editDetailTable-{{ $item->id }}">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Nama Barang</th>
-                                        <th>Jenis</th>
+                                        <th>Keterangan</th>
                                         <th>Jumlah</th>
                                         <th>Satuan</th>
                                         <th>Harga</th>
                                         <th>Subtotal</th>
-                                        <th>Dari Rekening</th>
-                                        <th>Ke Rekening</th>
-                                        <th>Keterangan</th>
                                         <th>Referensi</th>
                                         <th>Aksi</th>
                                     </tr>
@@ -564,33 +430,10 @@
                                             <input type="hidden" name="detail[{{ $index }}][id]" value="{{ $detail->id }}">
                                             <input type="text" name="detail[{{ $index }}][nama_barang]" class="form-control" value="{{ $detail->nama_barang }}" required>
                                         </td>
-                                        <td>
-                                            <select name="detail[{{ $index }}][jenis]" class="form-select" required>
-                                                <option value="pemasukan" {{ $detail->jenis == 'pemasukan' ? 'selected' : '' }}>Pemasukan</option>
-                                                <option value="pengeluaran" {{ $detail->jenis == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran</option>
-                                            </select>
-                                        </td>
                                         <td><input type="number" step="0.01" name="detail[{{ $index }}][jumlah]" class="form-control jumlah" value="{{ $detail->jumlah }}" required></td>
                                         <td><input type="text" name="detail[{{ $index }}][satuan]" class="form-control" value="{{ $detail->satuan }}"></td>
                                         <td><input type="number" step="0.01" name="detail[{{ $index }}][harga]" class="form-control harga" value="{{ $detail->harga }}" required></td>
                                         <td><input type="text" class="form-control subtotal" value="{{ number_format($detail->subtotal, 0, ',', '.') }}" readonly></td>
-
-
-                                        <td>
-                                            <select name="detail[{{ $index }}][dari_rekening_id]" class="form-select" required>
-                                                @foreach($rekening as $rek)
-                                                <option value="{{ $rek->id }}" {{ $detail->dari_rekening_id == $rek->id ? 'selected' : '' }}>{{ $rek->nama ?? '-' }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select name="detail[{{ $index }}][ke_rekening_id]" class="form-select" required>
-                                                @foreach($rekening as $rek)
-                                                <option value="{{ $rek->id }}" {{ $detail->ke_rekening_id == $rek->id ? 'selected' : '' }}>{{ $rek->nama }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td><input type="text" name="detail[{{ $index }}][keterangan]" class="form-control" value="{{ $detail->keterangan }}"></td>
                                         <td>
                                             @if($detail->referensi)
                                             <div class="d-flex align-items-center">
@@ -604,6 +447,7 @@
                                             @endif
                                         </td>
                                         <td>
+                                            <input type="hidden" name="detail[{{ $index }}][jenis]" value="pengeluaran">
                                             <button type="button" class="btn btn-danger btn-sm removeRow">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -676,33 +520,13 @@
         let newRow = `
         <tr>
             <td><input type="text" name="detail[${rowCount}][nama_barang]" class="form-control" required></td>
-            <td>
-                <select name="detail[${rowCount}][jenis]" class="form-select jenis" required>
-                    <option value="pemasukan">Pemasukan</option>
-                    <option value="pengeluaran">Pengeluaran</option>
-                </select>
-            </td>
             <td><input type="number" step="0.01" name="detail[${rowCount}][jumlah]" class="form-control jumlah" required></td>
             <td><input type="text" name="detail[${rowCount}][satuan]" class="form-control"></td>
             <td><input type="number" step="0.01" name="detail[${rowCount}][harga]" class="form-control harga" required></td>
             <td><input type="text" class="form-control subtotal" readonly></td>
-            <td>
-                <select name="detail[${rowCount}][dari_rekening_id]" class="form-select" required>
-                    @foreach($rekening as $rek)
-                        <option value="{{ $rek->id }}">{{ $rek->nama ?? '-' }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <select name="detail[${rowCount}][ke_rekening_id]" class="form-select" required>
-                    @foreach($rekening as $rek)
-                        <option value="{{ $rek->id }}">{{ $rek->nama ?? '-' }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td><input type="text" name="detail[${rowCount}][keterangan]" class="form-control"></td>
             <td><input type="file" name="detail[${rowCount}][referensi]" class="form-control"></td>
             <td>
+                <input type="hidden" name="detail[${rowCount}][jenis]" value="pengeluaran">
                 <button type="button" class="btn btn-danger btn-sm removeRow">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -792,33 +616,13 @@
             let newRow = `
         <tr>
             <td><input type="text" name="detail[${index}][nama_barang]" class="form-control" required></td>
-            <td>
-                <select name="detail[${index}][jenis]" class="form-select jenis" required>
-                    <option value="pemasukan">Pemasukan</option>
-                    <option value="pengeluaran">Pengeluaran</option>
-                </select>
-            </td>
             <td><input type="number" step="0.01" name="detail[${index}][jumlah]" class="form-control jumlah" required></td>
             <td><input type="text" name="detail[${index}][satuan]" class="form-control"></td>
             <td><input type="number" step="0.01" name="detail[${index}][harga]" class="form-control harga" required></td>
             <td><input type="text" class="form-control subtotal" readonly></td>
-            <td>
-                <select name="detail[${index}][dari_rekening_id]" class="form-select" required>
-                    @foreach($rekening as $rek)
-                        <option value="{{ $rek->id }}">{{ $rek->nama ?? '-' }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <select name="detail[${index}][ke_rekening_id]" class="form-select" required>
-                    @foreach($rekening as $rek)
-                        <option value="{{ $rek->id }}">{{ $rek->nama ?? '-' }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td><input type="text" name="detail[${index}][keterangan]" class="form-control"></td>
             <td><input type="file" name="detail[${index}][referensi]" class="form-control"></td>
             <td>
+                <input type="hidden" name="detail[${index}][jenis]" value="pengeluaran">
                 <button type="button" class="btn btn-danger btn-sm removeRow">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -876,33 +680,13 @@
             let newRow = `
         <tr>
             <td><input type="text" name="detail[${index}][nama_barang]" class="form-control" required></td>
-            <td>
-                <select name="detail[${index}][jenis]" class="form-select jenis" required>
-                    <option value="pemasukan">Pemasukan</option>
-                    <option value="pengeluaran">Pengeluaran</option>
-                </select>
-            </td>
             <td><input type="number" step="0.01" name="detail[${index}][jumlah]" class="form-control jumlah" required></td>
             <td><input type="text" name="detail[${index}][satuan]" class="form-control"></td>
             <td><input type="number" step="0.01" name="detail[${index}][harga]" class="form-control harga" required></td>
             <td><input type="text" class="form-control subtotal" readonly></td>
-            <td>
-                <select name="detail[${index}][dari_rekening_id]" class="form-select" required>
-                    @foreach($rekening as $rek)
-                        <option value="{{ $rek->id }}">{{ $rek->nama ?? '-' }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <select name="detail[${index}][ke_rekening_id]" class="form-select" required>
-                    @foreach($rekening as $rek)
-                        <option value="{{ $rek->id }}">{{ $rek->nama ?? '-' }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td><input type="text" name="detail[${index}][keterangan]" class="form-control"></td>
             <td><input type="file" name="detail[${index}][referensi]" class="form-control"></td>
             <td>
+                <input type="hidden" name="detail[${index}][jenis]" value="pengeluaran">
                 <button type="button" class="btn btn-danger btn-sm removeRow">
                     <i class="fas fa-trash"></i>
                 </button>

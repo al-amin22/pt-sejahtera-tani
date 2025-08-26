@@ -11,9 +11,14 @@ class DetailTransaksiController extends Controller
 {
     public function index()
     {
-        $detail_transaksi = DetailTransaksi::with(['transaksi', 'keRekening', 'dariRekening', 'mataUang'])->get();
-        return view('staff.detail_transaksi.index', compact('detail_transaksi'));
+        $details = DetailTransaksi::with(['transaksi', 'keRekening', 'dariRekening', 'mataUang'])
+            ->where('dari_rekening_id', 3)
+            ->where('ke_rekening_id', 4)
+            ->get();
+
+        return view('staff.detail_transaksi.index', compact('details'));
     }
+
 
     public function store(Request $request)
     {

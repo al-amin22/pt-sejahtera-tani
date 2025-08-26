@@ -46,8 +46,8 @@
                         @foreach($absensiKaryawans as $absensiKaryawan)
                         <tr>
                             <th scope="row">{{ $loop->iteration }}</th>
-                            <td>Absensi #{{ $absensiKaryawan->absensi_id }}</td>
-                            <td>Karyawan #{{ $absensiKaryawan->karyawan_id }}</td>
+                            <td>{{ $absensiKaryawan->absensi_id }}</td>
+                            <td>{{ $absensiKaryawan->karyawan_id }}</td>
                             <td>
                                 <span class="badge
                                     @if($absensiKaryawan->status == 'Hadir') bg-success
@@ -96,7 +96,7 @@
                         <select class="form-select" id="absensi_id" name="absensi_id" required>
                             <option value="" selected disabled>Pilih Absensi</option>
                             @foreach($absensis as $absensi)
-                            <option value="{{ $absensi->id }}">Absensi #{{ $absensi->id }} - {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
+                            <option value="{{ $absensi->id }}">Tanggal {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -105,7 +105,7 @@
                         <select class="form-select" id="karyawan_id" name="karyawan_id" required>
                             <option value="" selected disabled>Pilih Karyawan</option>
                             @foreach($karyawans as $karyawan)
-                            <option value="{{ $karyawan->id }}">{{ $karyawan->nama }} - {{ $karyawan->jabatan }}</option>
+                            <option value="{{ $karyawan->id }}">Nama : {{ $karyawan->nama }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -113,10 +113,8 @@
                         <label for="status" class="form-label">Status</label>
                         <select class="form-select" id="status" name="status" required>
                             <option value="" selected disabled>Pilih Status</option>
-                            <option value="Hadir">Hadir</option>
-                            <option value="Izin">Izin</option>
-                            <option value="Sakit">Sakit</option>
-                            <option value="Alpha">Alpha</option>
+                            <option value="hadir">Hadir</option>
+                            <option value="tidak hasdir">Tidak Hadir</option>
                         </select>
                     </div>
                 </div>
@@ -145,7 +143,7 @@
                         <label for="edit_absensi_id" class="form-label">Absensi</label>
                         <select class="form-select" id="edit_absensi_id" name="absensi_id" required>
                             @foreach($absensis as $absensi)
-                            <option value="{{ $absensi->id }}">Absensi #{{ $absensi->id }} - {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
+                            <option value="{{ $absensi->id }}">Tanggal : {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -153,17 +151,15 @@
                         <label for="edit_karyawan_id" class="form-label">Karyawan</label>
                         <select class="form-select" id="edit_karyawan_id" name="karyawan_id" required>
                             @foreach($karyawans as $karyawan)
-                            <option value="{{ $karyawan->id }}">{{ $karyawan->nama }} - {{ $karyawan->jabatan }}</option>
+                            <option value="{{ $karyawan->id }}">Nama : {{ $karyawan->nama }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="edit_status" class="form-label">Status</label>
                         <select class="form-select" id="edit_status" name="status" required>
-                            <option value="Hadir">Hadir</option>
-                            <option value="Izin">Izin</option>
-                            <option value="Sakit">Sakit</option>
-                            <option value="Alpha">Alpha</option>
+                            <option value="hadir">Hadir</option>
+                            <option value="tidak hadir">Tidak Hadir</option>
                         </select>
                     </div>
                 </div>
@@ -183,10 +179,10 @@
         // Handler untuk tombol edit
         $('.edit-btn').click(function() {
             var id = $(this).data('id');
-            var url = "{{ route('absensi_karyawan.data', ':id') }}".replace(':id', id);
+            var url = "{{ route('staff.absensi_karyawan.data', ':id') }}".replace(':id', id);
 
             $.get(url, function(data) {
-                $('#editForm').attr('action', "{{ route('absensi_karyawan.update', ':id') }}".replace(':id', id));
+                $('#editForm').attr('action', "{{ route('staff.absensi_karyawan.update', ':id') }}".replace(':id', id));
                 $('#edit_absensi_id').val(data.absensi_id);
                 $('#edit_karyawan_id').val(data.karyawan_id);
                 $('#edit_status').val(data.status);

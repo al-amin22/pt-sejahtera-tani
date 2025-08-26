@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('staff.layouts.app')
 
 @section('content')
 <div class="container-fluid">
@@ -46,14 +46,12 @@
                         @foreach($absensiKaryawans as $absensiKaryawan)
                         <tr>
                             <th scope="row">{{ $loop->iteration }}</th>
-                            <td>Absensi #{{ $absensiKaryawan->absensi_id }}</td>
-                            <td>Karyawan #{{ $absensiKaryawan->karyawan_id }}</td>
+                            <td>{{ $absensiKaryawan->absensi->tanggal ?? '-' }}</td>
+                            <td>{{ $absensiKaryawan->karyawan->nama ?? '-' }}</td>
                             <td>
                                 <span class="badge
-                                    @if($absensiKaryawan->status == 'Hadir') bg-success
-                                    @elseif($absensiKaryawan->status == 'Izin') bg-info
-                                    @elseif($absensiKaryawan->status == 'Sakit') bg-warning
-                                    @elseif($absensiKaryawan->status == 'Alpha') bg-danger
+                                    @if($absensiKaryawan->status == 'hadir') bg-success
+                                    @elseif($absensiKaryawan->status == 'tidak hadir') bg-danger
                                     @else bg-secondary
                                     @endif">
                                     {{ $absensiKaryawan->status }}
@@ -96,7 +94,7 @@
                         <select class="form-select" id="absensi_id" name="absensi_id" required>
                             <option value="" selected disabled>Pilih Absensi</option>
                             @foreach($absensis as $absensi)
-                            <option value="{{ $absensi->id }}">Absensi #{{ $absensi->id }} - {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
+                            <option value="{{ $absensi->id }}">Tanggal {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -105,7 +103,7 @@
                         <select class="form-select" id="karyawan_id" name="karyawan_id" required>
                             <option value="" selected disabled>Pilih Karyawan</option>
                             @foreach($karyawans as $karyawan)
-                            <option value="{{ $karyawan->id }}">{{ $karyawan->nama }} - {{ $karyawan->jabatan }}</option>
+                            <option value="{{ $karyawan->id }}">Nama : {{ $karyawan->nama }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -113,10 +111,8 @@
                         <label for="status" class="form-label">Status</label>
                         <select class="form-select" id="status" name="status" required>
                             <option value="" selected disabled>Pilih Status</option>
-                            <option value="Hadir">Hadir</option>
-                            <option value="Izin">Izin</option>
-                            <option value="Sakit">Sakit</option>
-                            <option value="Alpha">Alpha</option>
+                            <option value="hadir">Hadir</option>
+                            <option value="tidak hadir">Tidak Hadir</option>
                         </select>
                     </div>
                 </div>
@@ -145,7 +141,7 @@
                         <label for="edit_absensi_id" class="form-label">Absensi</label>
                         <select class="form-select" id="edit_absensi_id" name="absensi_id" required>
                             @foreach($absensis as $absensi)
-                            <option value="{{ $absensi->id }}">Absensi #{{ $absensi->id }} - {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
+                            <option value="{{ $absensi->id }}">Tanggal : {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -153,17 +149,15 @@
                         <label for="edit_karyawan_id" class="form-label">Karyawan</label>
                         <select class="form-select" id="edit_karyawan_id" name="karyawan_id" required>
                             @foreach($karyawans as $karyawan)
-                            <option value="{{ $karyawan->id }}">{{ $karyawan->nama }} - {{ $karyawan->jabatan }}</option>
+                            <option value="{{ $karyawan->id }}">Nama : {{ $karyawan->nama }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="edit_status" class="form-label">Status</label>
                         <select class="form-select" id="edit_status" name="status" required>
-                            <option value="Hadir">Hadir</option>
-                            <option value="Izin">Izin</option>
-                            <option value="Sakit">Sakit</option>
-                            <option value="Alpha">Alpha</option>
+                            <option value="hadir">Hadir</option>
+                            <option value="tidak hadir">Tidak Hadir</option>
                         </select>
                     </div>
                 </div>

@@ -82,10 +82,16 @@
                 <a href="{{ route('staff.detail_transaksi.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
                     <i class="fas fa-receipt me-2"></i> Detail Transaksi
                 </a>
-
+                <a href="{{ route('staff.karyawan.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-users me-2"></i> Karyawan
+                </a>
+                <a href="{{ route('staff.absensi.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-calendar-check me-2"></i> Absensi
+                </a>
                 <a href="{{ route('staff.absensi_karyawan.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
                     <i class="fas fa-calendar-check me-2"></i> Absensi Karyawan
                 </a>
+
             </div>
         </div>
 

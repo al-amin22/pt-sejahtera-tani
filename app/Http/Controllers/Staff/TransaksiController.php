@@ -9,7 +9,7 @@ use App\Models\DetailTransaksi;
 use App\Models\Rekening;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
-use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
@@ -34,48 +34,24 @@ class TransaksiController extends Controller
             $query->whereMonth('tanggal_transaksi', $bulan);
         }
 
+        // Ambil semua transaksi
         $transaksi = $query->get();
 
-        // Hitung statistik alur dana
-        $danaDariChina = DetailTransaksi::where('dari_rekening_id', 1)->sum('subtotal');
-        $saldoJambi = DetailTransaksi::where('ke_rekening_id', 2)->sum('subtotal');
-        $saldoAceh = DetailTransaksi::where('ke_rekening_id', 3)->sum('subtotal');
-        $operasionalJambi = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', '!=', 3)
-            ->sum('subtotal');
-        $transferAceh = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', 3)
-            ->sum('subtotal');
-        $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)
-            ->sum('subtotal');
-
-        // Hitung transfer dari China ke Jambi per bulan
-        $transferChinaKeJambiBulanan = DetailTransaksi::where('dari_rekening_id', 1)
-            ->where('ke_rekening_id', 2)
-            ->selectRaw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as bulan, SUM(subtotal) as total")
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan'); // hasil: ['2025-01' => 1000000, '2025-02' => 500000, ...]
-
-        $transferJambiKeAcehBulanan = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', 3)
-            ->selectRaw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as bulan, SUM(subtotal) as total")
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan'); // hasil: ['2025-01' => 1000000, '2025-02' => 500000, ...]
-
-        $transferJambiKeLainnyaBulanan = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', 4)
-            ->selectRaw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as bulan, SUM(subtotal) as total")
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan'); // hasil: ['2025-01' => 1000000, '2025-02' => 500000, ...]
+        // ====== 🔹 Filter detail transaksi rekening 3 -> 4
+        $filteredTransaksi = $transaksi->map(function ($trx) {
+            $trx->filteredDetails = $trx->details->filter(function ($detail) {
+                return $detail->dari_rekening_id == 3 && $detail->ke_rekening_id == 4;
+            });
+            return $trx;
+        })->filter(function ($trx) {
+            return $trx->filteredDetails->isNotEmpty();
+        });
 
         // Ambil data rekening
         $rekening = Rekening::all();
 
-        // Kelompokkan transaksi per bulan
-        $transaksiPerBulan = $transaksi->groupBy(function ($item) {
+        // Kelompokkan transaksi per bulan (dari hasil filter)
+        $transaksiPerBulan = $filteredTransaksi->groupBy(function ($item) {
             return Carbon::parse($item->tanggal_transaksi)->format('Y-m');
         });
 
@@ -89,33 +65,34 @@ class TransaksiController extends Controller
             $pengeluaran = 0;
 
             foreach ($transaksiBulan as $trx) {
-                if ($trx->total < 0) {
-                    $pemasukan += abs($trx->total);
-                    $totalPemasukan += abs($trx->total);
-                } else {
-                    $pengeluaran += $trx->total;
-                    $totalPengeluaran += $trx->total;
+                foreach ($trx->filteredDetails as $detail) {
+                    if ($detail->subtotal < 0) {
+                        $pemasukan += abs($detail->subtotal);
+                        $totalPemasukan += abs($detail->subtotal);
+                    } else {
+                        $pengeluaran += $detail->subtotal;
+                        $totalPengeluaran += $detail->subtotal;
+                    }
                 }
             }
 
             $saldoBulanan[$bulan] = [
-                'pemasukan' => $pemasukan,
+                'pemasukan'   => $pemasukan,
                 'pengeluaran' => $pengeluaran,
-                'saldo' => $pemasukan - $pengeluaran
+                'saldo'       => $pemasukan - $pengeluaran
             ];
         }
 
         // Hitung saldo akhir
         $saldoAkhir = $totalPemasukan - $totalPengeluaran;
 
+        // Total khusus operasional Aceh (contoh existing)
+        $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)->sum('subtotal');
+
         return view('staff.transaksi.index', compact(
-            'transferChinaKeJambiBulanan',
             'transaksi',
             'transaksiPerBulan',
             'saldoBulanan',
-            'danaDariChina',
-            'operasionalJambi',
-            'transferAceh',
             'rekening',
             'totalPemasukan',
             'totalPengeluaran',
@@ -123,13 +100,10 @@ class TransaksiController extends Controller
             'tahun',
             'bulan',
             'rekeningId',
-            'saldoAkhir',
-            'saldoBulanan',
-            'saldoJambi',
-            'saldoAceh',
             'operasionalAceh'
         ));
     }
+
 
     public function store(Request $request)
     {
@@ -140,12 +114,8 @@ class TransaksiController extends Controller
             'detail.*.id'           => 'nullable|integer',
             'detail.*.keterangan'   => 'nullable|string',
             'detail.*.nama_barang'  => 'required|string',
-            'detail.*.satuan'       => 'required|string',
-            'detail.*.jenis'        => 'required|in:pengeluaran,pemasukan',
             'detail.*.jumlah'       => 'required|numeric',
-            'detail.*.satuan'       => 'required|string',
-            'detail.*.dari_rekening_id' => 'nullable|integer',
-            'detail.*.ke_rekening_id'   => 'nullable|integer',
+            'detail.*.satuan'       => 'nullable|string',
             'detail.*.harga'        => 'required|numeric',
             'detail.*.referensi'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
@@ -153,7 +123,7 @@ class TransaksiController extends Controller
         try {
             $transaksi = Transaksi::create([
                 'tanggal_transaksi' => $request->tanggal_transaksi,
-                'user_id'           => 1,
+                'user_id'           => Auth::id(),
                 'keterangan'        => $request->keterangan,
                 'total'             => 0,
             ]);
@@ -180,18 +150,18 @@ class TransaksiController extends Controller
                 DetailTransaksi::create([
                     'transaksi_id'      => $transaksi->id,
                     'nama_barang'       => $item['nama_barang'],
-                    'jenis'             => $item['jenis'],
+                    'jenis'             => 'pengeluaran',
                     'jumlah'            => $item['jumlah'],
                     'harga'             => $item['harga'],
-                    'satuan'            => $item['satuan'],
+                    'satuan'            => $item['satuan'] ?? '-',
                     'subtotal'          => $subtotal,
                     'mata_uang_id'      => 1,
                     'keterangan'        => $item['keterangan'] ?? null,
                     'referensi'         => $filePath,
                     'tanggal_transaksi' => $request->tanggal_transaksi,
-                    'dari_rekening_id'  => $item['dari_rekening_id'] ?? null,
-                    'ke_rekening_id'    => $item['ke_rekening_id'] ?? null,
-                    'user_id'           => 1,
+                    'dari_rekening_id'  => 3,
+                    'ke_rekening_id'    => 4,
+                    'user_id'           => Auth::id(),
                 ]);
             }
 
@@ -210,13 +180,9 @@ class TransaksiController extends Controller
             'keterangan'            => 'nullable|string',
             'detail.*.id'           => 'nullable|integer',
             'detail.*.nama_barang'  => 'required|string',
-            'detail.*.jenis'        => 'required|in:pengeluaran,pemasukan',
             'detail.*.jumlah'      => 'required|numeric',
             'detail.*.satuan'      => 'nullable|string',
-            'detail.*.dari_rekening_id' => 'nullable|integer',
-            'detail.*.ke_rekening_id' => 'nullable|integer',
             'detail.*.harga'        => 'required|numeric',
-
             'detail.*.referensi'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
@@ -225,7 +191,7 @@ class TransaksiController extends Controller
             $transaksi->update([
                 'tanggal_transaksi' => $request->tanggal_transaksi,
                 'keterangan'        => $request->keterangan,
-                'user_id'           => 1,
+                'user_id'           => Auth::id(),
             ]);
 
             $total = 0;
@@ -255,14 +221,14 @@ class TransaksiController extends Controller
                     if ($detail) {
                         $detail->update([
                             'nama_barang'  => $item['nama_barang'],
-                            'jenis'        => $item['jenis'],
+                            'jenis'        => 'pengeluaran',
                             'jumlah'       => $item['jumlah'],
                             'satuan'       => $item['satuan'] ?? null,
                             'harga'        => $item['harga'],
                             'subtotal'     => $subtotal,
                             'mata_uang_id' => 1,
-                            'dari_rekening_id' => $item['dari_rekening_id'] ?? null,
-                            'ke_rekening_id' => $item['ke_rekening_id'] ?? null,
+                            'dari_rekening_id' => 3,
+                            'ke_rekening_id' => 4,
                             'keterangan'   => $item['keterangan'] ?? null,
                             'referensi'    => $filePath ?? $detail->referensi,
                             'tanggal_transaksi' => $request->tanggal_transaksi,
@@ -272,18 +238,18 @@ class TransaksiController extends Controller
                     DetailTransaksi::create([
                         'transaksi_id' => $transaksi->id,
                         'nama_barang'  => $item['nama_barang'],
-                        'jenis'        => $item['jenis'],
+                        'jenis'        => 'pengeluaran',
                         'jumlah'       => $item['jumlah'],
-                        'satuan'       => $item['satuan'] ?? null,
+                        'satuan'       => $item['satuan'] ?? '-',
                         'harga'        => $item['harga'],
                         'subtotal'     => $subtotal,
                         'mata_uang_id' => 1,
-                        'dari_rekening_id' => $item['dari_rekening_id'] ?? null,
-                        'ke_rekening_id' => $item['ke_rekening_id'] ?? null,
+                        'dari_rekening_id' => 3,
+                        'ke_rekening_id' => 4,
                         'keterangan'   => $item['keterangan'] ?? null,
                         'referensi'    => $filePath,
                         'tanggal_transaksi' => $request->tanggal_transaksi,
-                        'user_id'      => 1,
+                        'user_id'      => Auth::id(),
                     ]);
                 }
             }
@@ -298,8 +264,18 @@ class TransaksiController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with(['user', 'pemasok', 'mataUang', 'detailTransaksi'])->findOrFail($id);
-        return view('staff.transaksi.show', compact('transaksi'));
+        $transaksi = Transaksi::with(['user', 'pemasok', 'mataUang', 'detailTransaksi'])
+            ->findOrFail($id);
+
+        // filter detail transaksi langsung di collection
+        $filteredDetails = $transaksi->detailTransaksi
+            ->where('dari_rekening_id', 3)
+            ->where('ke_rekening_id', 4);
+
+        return view('staff.transaksi.show', [
+            'transaksi' => $transaksi,
+            'details'   => $filteredDetails
+        ]);
     }
 
     public function destroy($id)

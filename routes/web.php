@@ -12,6 +12,8 @@ use App\Http\Controllers\RekeningController;
 use App\Http\Controllers\Staff\DetailTransaksiController as StaffDetailTransaksiController;
 use App\Http\Controllers\Staff\AbsensiKaryawanController as StaffAbsensiKaryawanController;
 use App\Http\Controllers\Staff\TransaksiController as StaffTransaksiController;
+use App\Http\Controllers\Staff\AbsensiController as StaffAbsensiController;
+use App\Http\Controllers\Staff\KaryawanController as StaffKaryawanController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -115,6 +117,20 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::put('absensi-karyawan/{id}', [StaffAbsensiKaryawanController::class, 'update'])->name('absensi_karyawan.update');
     Route::delete('absensi-karyawan/{id}', [StaffAbsensiKaryawanController::class, 'destroy'])->name('absensi_karyawan.destroy');
     Route::get('absensi-karyawan/data', [AbsensiKaryawanController::class, 'data'])->name('absensi_karyawan.data');
+
+    //absensi
+    Route::get('absensi', [StaffAbsensiController::class, 'index'])->name('absensi.index');
+    Route::post('absensi', [StaffAbsensiController::class, 'store'])->name('absensi.store');
+    Route::get('absensi/{id}', [StaffAbsensiController::class, 'show'])->name('absensi.show');
+    Route::put('absensi/{id}', [StaffAbsensiController::class, 'update'])->name('absensi.update');
+    Route::delete('absensi/{id}', [StaffAbsensiController::class, 'destroy'])->name('absensi.destroy');
+
+    //karyawan
+    Route::get('karyawan', [StaffKaryawanController::class, 'index'])->name('karyawan.index');
+    Route::post('karyawan', [StaffKaryawanController::class, 'store'])->name('karyawan.store');
+    Route::get('karyawan/{id}', [StaffKaryawanController::class, 'show'])->name('karyawan.show');
+    Route::put('karyawan/{id}', [StaffKaryawanController::class, 'update'])->name('karyawan.update');
+    Route::delete('karyawan/{id}', [StaffKaryawanController::class, 'destroy'])->name('karyawan.destroy');
 });
 
 // ✅ Finance dashboard

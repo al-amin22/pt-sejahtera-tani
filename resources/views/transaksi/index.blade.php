@@ -206,10 +206,12 @@
                         <tr class="table-secondary">
                             <td colspan="8" class="text-center fw-bold">
                                 {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }} -
-                                Saldo Akhir:
-                                {{ number_format($saldoBulanan[$bulan]['saldo'] ?? 0, 0, ',', '.') }}
+                                Pemasukan: {{ number_format($saldoBulanan[$bulan]['pemasukan'] ?? 0, 0, ',', '.') }} -
+                                Pengeluaran: {{ number_format($saldoBulanan[$bulan]['pengeluaran'] ?? 0, 0, ',', '.') }} -
+                                Saldo Akhir: {{ number_format($saldoBulanan[$bulan]['saldo'] ?? 0, 0, ',', '.') }}
                             </td>
                         </tr>
+
 
                         @foreach($transaksiBulan as $item)
                         @php

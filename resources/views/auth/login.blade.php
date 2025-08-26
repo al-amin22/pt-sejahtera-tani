@@ -1,161 +1,84 @@
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PT Borona Petani Sajahtera</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-container {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .login-left {
-            background: linear-gradient(to right, #2c7744, #5aaf6f);
-            color: white;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .company-logo {
-            width: 120px;
-            height: 120px;
-            background-color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 50px;
-            color: #2c7744;
-        }
-
-        .login-right {
-            padding: 40px;
-        }
-
-        .form-control:focus {
-            border-color: #5aaf6f;
-            box-shadow: 0 0 0 0.25rem rgba(90, 175, 111, 0.25);
-        }
-
-        .btn-primary {
-            background-color: #2c7744;
-            border-color: #2c7744;
-        }
-
-        .btn-primary:hover {
-            background-color: #246236;
-            border-color: #246236;
-        }
-
-        .forgot-link {
-            color: #5aaf6f;
-            text-decoration: none;
-        }
-
-        .forgot-link:hover {
-            text-decoration: underline;
-            color: #246236;
-        }
-
-        @media (max-width: 768px) {
-            .login-left {
-                padding: 30px 20px;
-            }
-
-            .login-right {
-                padding: 30px 20px;
-            }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - {{ config('app.name') }}</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body>
-    <div class="login-container">
-        <div class="row g-0">
-            <!-- Bagian Kiri dengan Informasi Perusahaan -->
-            <div class="col-md-6 login-left">
-                <div class="company-logo">
-                    <i class="bi bi-tree-fill"></i>
-                </div>
-                <h2 class="mb-3">PT Borona Petani Sajahtera</h2>
-                <p>Selamat datang di sistem manajemen pertanian terintegrasi kami. Masuk untuk mengakses dashboard dan fitur lengkap.</p>
-                <div class="mt-4">
-                    <div class="d-flex justify-content-center">
-                        <div class="px-3"><i class="bi bi-shield-check fs-1"></i></div>
-                        <div class="px-3"><i class="bi bi-graph-up fs-1"></i></div>
-                        <div class="px-3"><i class="bi bi-cart-check fs-1"></i></div>
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="text-center mb-4 fw-bold">Login</h3>
+
+                        {{-- Status Session --}}
+                        @if (session('status'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('status') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        @endif
+
+                        <form method="POST" action="{{ route('login') }}">
+                            @csrf
+
+                            {{-- Email --}}
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email address</label>
+                                <input id="email" type="email"
+                                    class="form-control @error('email') is-invalid @enderror"
+                                    name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
+                                @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Password --}}
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input id="password" type="password"
+                                    class="form-control @error('password') is-invalid @enderror"
+                                    name="password" required autocomplete="current-password">
+                                @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Remember Me --}}
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember_me" name="remember">
+                                <label class="form-check-label" for="remember_me">Remember me</label>
+                            </div>
+
+                            {{-- Forgot Password & Button --}}
+                            <div class="d-flex justify-content-between align-items-center">
+                                @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}" class="text-decoration-none small">
+                                    Forgot your password?
+                                </a>
+                                @endif
+
+                                <button type="submit" class="btn btn-primary px-4">
+                                    Log in
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </div>
-
-            <!-- Bagian Kanan dengan Form Login -->
-            <div class="col-md-6 login-right">
-                <h3 class="mb-4 text-center">Masuk ke Akun Anda</h3>
-
-                <!-- Session Status -->
-                <div class="alert alert-info" role="alert">
-                    Status sesi akan muncul di sini
-                </div>
-
-                <form method="POST" action="#">
-                    <!-- Email Address -->
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required autofocus autocomplete="email">
-                        <div class="form-text text-danger">Pesan error email</div>
-                    </div>
-
-                    <!-- Password -->
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
-                        <div class="form-text text-danger">Pesan error password</div>
-                    </div>
-
-                    <!-- Remember Me -->
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember_me" name="remember">
-                        <label class="form-check-label" for="remember_me">Ingat saya</label>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <a href="#" class="forgot-link">Lupa password?</a>
-                        <button type="submit" class="btn btn-primary px-4">Masuk</button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-4">
-                    <p>Belum punya akun? <a href="#" class="forgot-link">Hubungi Administrator</a></p>
-                </div>
+                <p class="text-center text-muted mt-3 mb-0">&copy; {{ date('Y') }} {{ config('app.name') }}</p>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS (for alert close, modal, etc.) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

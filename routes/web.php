@@ -9,6 +9,9 @@ use App\Http\Controllers\MataUangController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\RekeningController;
+use App\Http\Controllers\Staff\DetailTransaksiController as StaffDetailTransaksiController;
+use App\Http\Controllers\Staff\AbsensiKaryawanController as StaffAbsensiKaryawanController;
+use App\Http\Controllers\Staff\TransaksiController as StaffTransaksiController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -83,10 +86,35 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 });
 
 // ✅ Staff dashboard
-Route::middleware(['auth', 'role:staff'])->group(function () {
-    Route::get('/staff/dashboard', function () {
-        return view('dashboard.staff');
-    })->name('staff.dashboard');
+Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('staff.dashboard.index');
+    })->name('dashboard');
+
+    //transaksi
+    Route::get('transaksi', [StaffTransaksiController::class, 'index'])->name('transaksi.index');
+    Route::post('transaksi', [StaffTransaksiController::class, 'store'])->name('transaksi.store');
+    Route::get('transaksi/{id}', [StaffTransaksiController::class, 'show'])->name('transaksi.show');
+    Route::put('transaksi/{id}', [StaffTransaksiController::class, 'update'])->name('transaksi.update');
+    Route::delete('transaksi/{id}', [StaffTransaksiController::class, 'destroy'])->name('transaksi.destroy');
+
+    //eksport pdf
+    Route::get('transaksi/export-pdf', [StaffTransaksiController::class, 'exportPdf'])->name('transaksi.export-pdf');
+
+    //detail transaksi
+    Route::get('detail-transaksi', [StaffDetailTransaksiController::class, 'index'])->name('detail_transaksi.index');
+    Route::post('detail-transaksi', [StaffDetailTransaksiController::class, 'store'])->name('detail_transaksi.store');
+    Route::get('detail-transaksi/{id}', [StaffDetailTransaksiController::class, 'show'])->name('detail_transaksi.show');
+    Route::put('detail-transaksi/{id}', [StaffDetailTransaksiController::class, 'update'])->name('detail_transaksi.update');
+    Route::delete('detail-transaksi/{id}', [StaffDetailTransaksiController::class, 'destroy'])->name('detail_transaksi.destroy');
+
+    //absensi karyawan
+    Route::get('absensi-karyawan', [StaffAbsensiKaryawanController::class, 'index'])->name('absensi_karyawan.index');
+    Route::post('absensi-karyawan', [StaffAbsensiKaryawanController::class, 'store'])->name('absensi_karyawan.store');
+    Route::get('absensi-karyawan/{id}', [StaffAbsensiKaryawanController::class, 'show'])->name('absensi_karyawan.show');
+    Route::put('absensi-karyawan/{id}', [StaffAbsensiKaryawanController::class, 'update'])->name('absensi_karyawan.update');
+    Route::delete('absensi-karyawan/{id}', [StaffAbsensiKaryawanController::class, 'destroy'])->name('absensi_karyawan.destroy');
+    Route::get('absensi-karyawan/data', [AbsensiKaryawanController::class, 'data'])->name('absensi_karyawan.data');
 });
 
 // ✅ Finance dashboard

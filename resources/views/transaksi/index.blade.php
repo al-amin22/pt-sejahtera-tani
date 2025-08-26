@@ -205,7 +205,14 @@
                         @foreach($transaksiPerBulan as $bulan => $transaksiBulan)
                         <tr class="table-secondary">
                             <td colspan="8" class="text-center fw-bold">
-                                {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }}
+                                <span>
+                                    {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }}
+                                </span>
+                                <span class="{{ $saldoBulanan[$bulan]['saldo'] >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">
+                                    <i class="fas fa-wallet me-1"></i>
+                                    {{ $saldoBulanan[$bulan]['saldo'] >= 0 ? '+' : '' }}Rp
+                                    {{ number_format(abs($saldoBulanan[$bulan]['saldo']), 0, ',', '.') }}
+                                </span>
                             </td>
                         </tr>
 

@@ -21,7 +21,7 @@ class TransaksiController extends Controller
 
         // Query transaksi dengan relasi
         $query = Transaksi::with(['details', 'details.dariRekening', 'details.keRekening', 'user'])
-            ->orderBy('tanggal_transaksi', 'desc');
+            ->orderBy('tanggal_transaksi', 'asc'); // penting: urutkan dari awal tahun ke akhir
 
         // Filter berdasarkan tahun
         if ($tahun) {
@@ -34,6 +34,9 @@ class TransaksiController extends Controller
         }
 
         $transaksi = $query->get();
+
+        // Ambil data rekening
+        $rekening = Rekening::all();
 
         // Hitung statistik alur dana
         $danaDariChina = DetailTransaksi::where('dari_rekening_id', 1)->sum('subtotal');
@@ -48,73 +51,47 @@ class TransaksiController extends Controller
         $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)
             ->sum('subtotal');
 
-        // Hitung transfer dari China ke Jambi per bulan
-        $transferChinaKeJambiBulanan = DetailTransaksi::where('dari_rekening_id', 1)
-            ->where('ke_rekening_id', 2)
-            ->selectRaw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as bulan, SUM(subtotal) as total")
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan'); // hasil: ['2025-01' => 1000000, '2025-02' => 500000, ...]
-
-        $transferJambiKeAcehBulanan = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', 3)
-            ->selectRaw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as bulan, SUM(subtotal) as total")
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan'); // hasil: ['2025-01' => 1000000, '2025-02' => 500000, ...]
-
-        $transferJambiKeLainnyaBulanan = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', 4)
-            ->selectRaw("DATE_FORMAT(tanggal_transaksi, '%Y-%m') as bulan, SUM(subtotal) as total")
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan'); // hasil: ['2025-01' => 1000000, '2025-02' => 500000, ...]
-
-        // Ambil data rekening
-        $rekening = Rekening::all();
-
         // Kelompokkan transaksi per bulan
         $transaksiPerBulan = $transaksi->groupBy(function ($item) {
             return Carbon::parse($item->tanggal_transaksi)->format('Y-m');
         });
 
-        $sisaSaldoBulanan    = [];
-        $totalPemasukan      = 0;
-        $totalPengeluaran    = 0;
-        $sisaSaldoSebelumnya = 0; // saldo awal riil kalau ada
+        // Hitung saldo bulanan kumulatif
+        $saldoBulanan = [];
+        $saldoSebelumnya = 0;
 
-        foreach ($transaksiPerBulan as $keyBulan => $transaksiBulan) {
-            $pemasukanBulanIni   = 0;
-            $pengeluaranBulanIni = 0;
+        foreach ($transaksiPerBulan as $bulanKey => $transaksiBulan) {
+            $pemasukan = 0;
+            $pengeluaran = 0;
 
             foreach ($transaksiBulan as $trx) {
                 if ($trx->total < 0) {
-                    $pemasukanBulanIni += abs($trx->total);
-                    $totalPemasukan    += abs($trx->total);
+                    $pemasukan += abs($trx->total);
                 } else {
-                    $pengeluaranBulanIni += $trx->total;
-                    $totalPengeluaran    += $trx->total;
+                    $pengeluaran += $trx->total;
                 }
             }
 
-            // rumus: sisa saldo bulanan = pemasukan bulan ini + sisa saldo bulan sebelumnya - pengeluaran bulan ini
-            $sisaSaldoBulanIni = $pemasukanBulanIni + $sisaSaldoSebelumnya - $pengeluaranBulanIni;
-
-            $sisaSaldoBulanan[$keyBulan] = [
-                'pemasukan'   => $pemasukanBulanIni,
-                'pengeluaran' => $pengeluaranBulanIni,
-                'saldo'       => $sisaSaldoBulanIni,
+            $saldoBulanan[$bulanKey] = [
+                'pemasukan' => $pemasukan,
+                'pengeluaran' => $pengeluaran,
+                'saldo' => $saldoSebelumnya + $pemasukan - $pengeluaran
             ];
 
-            // update saldo sebelumnya
-            $sisaSaldoSebelumnya = $sisaSaldoBulanIni;
+            // Update saldo sebelumnya untuk bulan berikutnya
+            $saldoSebelumnya = $saldoBulanan[$bulanKey]['saldo'];
         }
 
-        // Hitung saldo akhir
+        // Total pemasukan dan pengeluaran tahun ini
+        $totalPemasukan = $transaksi->where('total', '<', 0)->sum(function ($trx) {
+            return abs($trx->total);
+        });
+        $totalPengeluaran = $transaksi->where('total', '>=', 0)->sum('total');
+
+        // Saldo akhir tahun
         $saldoAkhir = $totalPemasukan - $totalPengeluaran;
 
         return view('transaksi.index', compact(
-            'transferChinaKeJambiBulanan',
             'transaksi',
             'transaksiPerBulan',
             'saldoBulanan',
@@ -128,8 +105,6 @@ class TransaksiController extends Controller
             'tahun',
             'bulan',
             'rekeningId',
-            'saldoAkhir',
-            'saldoBulanan',
             'saldoJambi',
             'saldoAceh',
             'operasionalAceh'

@@ -205,21 +205,11 @@
                         @foreach($transaksiPerBulan as $bulan => $transaksiBulan)
                         <tr class="table-secondary">
                             <td colspan="8" class="text-center fw-bold">
-                                {{-- Nama Bulan --}}
-                                <span>
-                                    {{ \Carbon\Carbon::parse($keyBulan . '-01')->translatedFormat('F Y') }}
-                                </span>
-
-                                {{-- Sisa Saldo Bulan Ini --}}
-                                <span class="{{ $sisaSaldoBulanan[$keyBulan]['saldo'] >= 0 ? 'saldo-positif' : 'saldo-negatif' }}">
-                                    <i class="fas fa-wallet me-1"></i>
-                                    Sisa Saldo:
-                                    {{ $sisaSaldoBulanan[$keyBulan]['saldo'] >= 0 ? '+' : '-' }}Rp
-                                    {{ number_format(abs($sisaSaldoBulanan[$keyBulan]['saldo']), 0, ',', '.') }}
-                                </span>
+                                {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }} -
+                                Saldo Akhir:
+                                {{ number_format($saldoBulanan[$bulan]['saldo'] ?? 0, 0, ',', '.') }}
                             </td>
                         </tr>
-
 
                         @foreach($transaksiBulan as $item)
                         @php

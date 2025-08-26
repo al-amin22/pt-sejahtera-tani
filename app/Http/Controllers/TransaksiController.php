@@ -82,6 +82,7 @@ class TransaksiController extends Controller
         $saldoBulanan = [];
         $totalPemasukan = 0;
         $totalPengeluaran = 0;
+        $saldoSebelumnya = 0; // buat menampung saldo berjalan
 
         foreach ($transaksiPerBulan as $bulan => $transaksiBulan) {
             $pemasukan = 0;
@@ -97,11 +98,17 @@ class TransaksiController extends Controller
                 }
             }
 
+            // saldo bulan ini = saldo sebelumnya + pemasukan - pengeluaran
+            $saldoSekarang = $saldoSebelumnya + $pemasukan - $pengeluaran;
+
             $saldoBulanan[$bulan] = [
                 'pemasukan' => $pemasukan,
                 'pengeluaran' => $pengeluaran,
-                'saldo' => $pemasukan - $pengeluaran
+                'saldo' => $saldoSekarang
             ];
+
+            // update saldo sebelumnya untuk bulan berikutnya
+            $saldoSebelumnya = $saldoSekarang;
         }
 
         // Hitung saldo akhir

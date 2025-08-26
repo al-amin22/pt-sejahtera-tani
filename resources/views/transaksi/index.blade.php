@@ -215,9 +215,6 @@
                                 </span>
                             </td>
                         </tr>
-
-                        </tr>
-
                         @foreach($transaksiBulan as $item)
                         @php
                         $isPemasukan = $item->total < 0;

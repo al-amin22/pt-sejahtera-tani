@@ -82,7 +82,7 @@ class TransaksiController extends Controller
         $saldoBulanan = [];
         $totalPemasukan = 0;
         $totalPengeluaran = 0;
-        $saldoSebelumnya = 0; // buat menampung saldo berjalan
+        $saldoSebelumnya = 0; // mulai dari 0 atau bisa Anda ganti saldo awal riil
 
         foreach ($transaksiPerBulan as $bulan => $transaksiBulan) {
             $pemasukan = 0;
@@ -98,13 +98,13 @@ class TransaksiController extends Controller
                 }
             }
 
-            // saldo bulan ini = saldo sebelumnya + pemasukan - pengeluaran
+            // saldo bulan ini = saldo bulan sebelumnya + pemasukan - pengeluaran
             $saldoSekarang = $saldoSebelumnya + $pemasukan - $pengeluaran;
 
             $saldoBulanan[$bulan] = [
-                'pemasukan' => $pemasukan,
+                'pemasukan'   => $pemasukan,
                 'pengeluaran' => $pengeluaran,
-                'saldo' => $saldoSekarang
+                'saldo'       => $saldoSekarang,
             ];
 
             // update saldo sebelumnya untuk bulan berikutnya

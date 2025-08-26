@@ -78,37 +78,36 @@ class TransaksiController extends Controller
             return Carbon::parse($item->tanggal_transaksi)->format('Y-m');
         });
 
-        // Hitung saldo bulanan
-        $saldoBulanan = [];
-        $totalPemasukan = 0;
-        $totalPengeluaran = 0;
-        $saldoSebelumnya = 0; // mulai dari 0 atau bisa Anda ganti saldo awal riil
+        $sisaSaldoBulanan    = [];
+        $totalPemasukan      = 0;
+        $totalPengeluaran    = 0;
+        $sisaSaldoSebelumnya = 0; // saldo awal riil kalau ada
 
-        foreach ($transaksiPerBulan as $bulan => $transaksiBulan) {
-            $pemasukan = 0;
-            $pengeluaran = 0;
+        foreach ($transaksiPerBulan as $keyBulan => $transaksiBulan) {
+            $pemasukanBulanIni   = 0;
+            $pengeluaranBulanIni = 0;
 
             foreach ($transaksiBulan as $trx) {
                 if ($trx->total < 0) {
-                    $pemasukan += abs($trx->total);
-                    $totalPemasukan += abs($trx->total);
+                    $pemasukanBulanIni += abs($trx->total);
+                    $totalPemasukan    += abs($trx->total);
                 } else {
-                    $pengeluaran += $trx->total;
-                    $totalPengeluaran += $trx->total;
+                    $pengeluaranBulanIni += $trx->total;
+                    $totalPengeluaran    += $trx->total;
                 }
             }
 
-            // saldo bulan ini = saldo bulan sebelumnya + pemasukan - pengeluaran
-            $saldoSekarang = $saldoSebelumnya + $pemasukan - $pengeluaran;
+            // rumus: sisa saldo bulanan = pemasukan bulan ini + sisa saldo bulan sebelumnya - pengeluaran bulan ini
+            $sisaSaldoBulanIni = $pemasukanBulanIni + $sisaSaldoSebelumnya - $pengeluaranBulanIni;
 
-            $saldoBulanan[$bulan] = [
-                'pemasukan'   => $pemasukan,
-                'pengeluaran' => $pengeluaran,
-                'saldo'       => $saldoSekarang,
+            $sisaSaldoBulanan[$keyBulan] = [
+                'pemasukan'   => $pemasukanBulanIni,
+                'pengeluaran' => $pengeluaranBulanIni,
+                'saldo'       => $sisaSaldoBulanIni,
             ];
 
-            // update saldo sebelumnya untuk bulan berikutnya
-            $saldoSebelumnya = $saldoSekarang;
+            // update saldo sebelumnya
+            $sisaSaldoSebelumnya = $sisaSaldoBulanIni;
         }
 
         // Hitung saldo akhir

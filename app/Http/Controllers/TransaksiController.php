@@ -40,31 +40,21 @@ class TransaksiController extends Controller
 
         // Hitung statistik alur dana
         $danaDariChina = DetailTransaksi::where('dari_rekening_id', 1)->sum('subtotal');
-
+        $saldoJambi = DetailTransaksi::where('ke_rekening_id', 2)->sum('subtotal');
+        $saldoAceh = DetailTransaksi::where('ke_rekening_id', 3)->sum('subtotal');
         $operasionalJambi = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', '=', 4)
+            ->where('ke_rekening_id', '!=', 3)
             ->sum('subtotal');
         $transferAceh = DetailTransaksi::where('dari_rekening_id', 2)
             ->where('ke_rekening_id', 3)
             ->sum('subtotal');
         $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)
-            ->where('ke_rekening_id', '=', 4)
             ->sum('subtotal');
-
-        $saldoJambi = DetailTransaksi::where('ke_rekening_id', 2)->sum('subtotal')
-            - $operasionalJambi
-            - $transferAceh;
-
-        $saldoAceh = DetailTransaksi::where('ke_rekening_id', 3)->sum('subtotal')
-            - $operasionalAceh;
 
         // Kelompokkan transaksi per bulan
         $transaksiPerBulan = $transaksi->groupBy(function ($item) {
             return Carbon::parse($item->tanggal_transaksi)->format('Y-m');
         });
-
-        // Urutkan bulan dari tertinggi ke terendah
-        $transaksiPerBulan = $transaksiPerBulan->sortKeysDesc();
 
         // Hitung saldo bulanan kumulatif
         $saldoBulanan = [];
@@ -75,11 +65,6 @@ class TransaksiController extends Controller
             $pengeluaran = 0;
 
             foreach ($transaksiBulan as $trx) {
-                // Skip jika transaksi = operasional Aceh (rekening 3 -> 4)
-                if ($trx->dari_rekening_id == 3 && $trx->ke_rekening_id == 4) {
-                    continue;
-                }
-
                 if ($trx->total < 0) {
                     $pemasukan += abs($trx->total);
                 } else {
@@ -93,23 +78,15 @@ class TransaksiController extends Controller
                 'saldo' => $saldoSebelumnya + $pemasukan - $pengeluaran
             ];
 
+            // Update saldo sebelumnya untuk bulan berikutnya
             $saldoSebelumnya = $saldoBulanan[$bulanKey]['saldo'];
         }
 
         // Total pemasukan dan pengeluaran tahun ini
-        $totalPemasukan = $transaksi
-            ->where('total', '<', 0)
-            ->sum(function ($trx) {
-                return abs($trx->total);
-            });
-
-        $totalPengeluaran = $transaksi
-            ->where('total', '>=', 0)
-            ->reject(function ($trx) {
-                // exclude operasional Aceh
-                return $trx->dari_rekening_id == 3 && $trx->ke_rekening_id == 4;
-            })
-            ->sum('total');
+        $totalPemasukan = $transaksi->where('total', '<', 0)->sum(function ($trx) {
+            return abs($trx->total);
+        });
+        $totalPengeluaran = $transaksi->where('total', '>=', 0)->sum('total');
 
         // Saldo akhir tahun
         $saldoAkhir = $totalPemasukan - $totalPengeluaran;

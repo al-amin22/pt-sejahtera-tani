@@ -25,11 +25,6 @@ class Transaksi extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function pemasok()
-    {
-        return $this->belongsTo(Pemasok::class, 'pemasok_id');
-    }
-
     public function mataUang()
     {
         return $this->belongsTo(MataUang::class, 'mata_uang_id');
@@ -38,11 +33,6 @@ class Transaksi extends Model
     public function detailTransaksi()
     {
         return $this->hasMany(DetailTransaksi::class);
-    }
-
-    public function arusKas()
-    {
-        return $this->hasOne(ArusKas::class, 'transaksi_id');
     }
 
     public function details()

@@ -1,4 +1,4 @@
-@extends('staff.layouts.app')
+@extends('layouts.app')
 
 @section('content')
 <div class="container-fluid">
@@ -66,16 +66,26 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('staff.absensi.show', $absensi->id) }}" class="btn btn-sm btn-info">
+                                <!-- Tombol Lihat -->
+                                <button class="btn btn-sm btn-info"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#viewAbsensiModal{{ $absensi->id }}">
                                     <i class="fas fa-eye"></i>
-                                </a>
-                                <button class="btn btn-sm btn-warning edit-btn" data-id="{{ $absensi->id }}" data-bs-toggle="modal" data-bs-target="#editAbsensiModal">
+                                </button>
+
+                                <!-- Tombol Edit -->
+                                <button class="btn btn-sm btn-warning"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editAbsensiModal{{ $absensi->id }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <form action="{{ route('staff.absensi.destroy', $absensi->id) }}" method="POST" class="d-inline">
+
+                                <!-- Tombol Hapus -->
+                                <form action="{{ route('absensi.destroy', $absensi->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger delete-btn">
+                                    <button type="submit" class="btn btn-sm btn-danger delete-btn"
+                                        onclick="return confirm('Apakah Anda yakin ingin menghapus data absensi ini?')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -97,7 +107,7 @@
                 <h5 class="modal-title" id="addAbsensiModalLabel">Tambah Data Absensi</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('staff.absensi.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('absensi.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
@@ -125,30 +135,38 @@
 </div>
 
 <!-- Modal Edit Absensi -->
-<div class="modal fade" id="editAbsensiModal" tabindex="-1" aria-labelledby="editAbsensiModalLabel" aria-hidden="true">
+<div class="modal fade" id="editAbsensiModal{{ $absensi->id }}" tabindex="-1" aria-labelledby="editAbsensiModalLabel{{ $absensi->id }}" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editAbsensiModalLabel">Edit Data Absensi</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Edit Data Absensi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('staff.absensi.update', $absensi->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('absensi.update', $absensi->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="edit_tanggal" class="form-label">Tanggal Tidak Dapat Di Ubah</label>
-                        <input type="date" value="{{ old('tanggal', $absensiGetTanggal->first()->tanggal ?? '') }}" class="form-control" id="edit_tanggal" name="tanggal" readonly>
+                        <label for="tanggal{{ $absensi->id }}" class="form-label">Tanggal</label>
+                        <input type="date" class="form-control" id="tanggal{{ $absensi->id }}" name="tanggal" value="{{ $absensi->tanggal }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_video" class="form-label">Video</label>
-                        <input type="file" class="form-control" id="edit_video" name="video" accept="video/mp4,video/mov,video/avi">
-                        <div class="form-text" id="current_video">Unggah video baru untuk mengganti yang lama</div>
+                        <label for="video{{ $absensi->id }}" class="form-label">Video</label>
+                        <input type="file" class="form-control" id="video{{ $absensi->id }}" name="video" accept="video/mp4,video/mov,video/avi">
+                        @if($absensi->video)
+                        <div class="form-text">Video saat ini: <a href="{{ asset($absensi->video) }}" target="_blank">Lihat Video</a></div>
+                        @else
+                        <div class="form-text">Belum ada video yang diunggah</div>
+                        @endif
                     </div>
                     <div class="mb-3">
-                        <label for="edit_foto" class="form-label">Foto</label>
-                        <input type="file" class="form-control" id="edit_foto" name="foto" accept="image/jpeg,image/png,image/jpg">
-                        <div class="form-text" id="current_foto">Unggah foto baru untuk mengganti yang lama</div>
+                        <label for="foto{{ $absensi->id }}" class="form-label">Foto</label>
+                        <input type="file" class="form-control" id="foto{{ $absensi->id }}" name="foto" accept="image/jpeg,image/png,image/jpg">
+                        @if($absensi->foto)
+                        <div class="form-text">Foto saat ini: <a href="{{ asset($absensi->foto) }}" target="_blank">Lihat Foto</a></div>
+                        @else
+                        <div class="form-text">Belum ada foto yang diunggah</div>
+                        @endif
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -161,94 +179,47 @@
 </div>
 
 <!-- Modal Lihat Absensi -->
-<div class="modal fade" id="viewAbsensiModal" tabindex="-1" aria-labelledby="viewAbsensiModalLabel" aria-hidden="true">
+<div class="modal fade" id="viewAbsensiModal{{ $absensi->id }}" tabindex="-1" aria-labelledby="viewAbsensiModalLabel{{ $absensi->id }}" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="viewAbsensiModalLabel">Detail Data Absensi</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Detail Data Absensi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row mb-3">
                     <div class="col-md-4 fw-bold">Tanggal:</div>
-                    <div class="col-md-8" id="view_tanggal"></div>
+                    <div class="col-md-8">{{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 fw-bold">Video:</div>
-                    <div class="col-md-8" id="view_video"></div>
+                    <div class="col-md-8">
+                        @if($absensi->video)
+                        <a href="{{ asset($absensi->video) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-video"></i> Lihat Video
+                        </a>
+                        @else
+                        <span class="text-muted">Tidak ada video</span>
+                        @endif
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 fw-bold">Foto:</div>
-                    <div class="col-md-8" id="view_foto"></div>
+                    <div class="col-md-8">
+                        @if($absensi->foto)
+                        <a href="{{ asset($absensi->foto) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-image"></i> Lihat Foto
+                        </a>
+                        @else
+                        <span class="text-muted">Tidak ada foto</span>
+                        @endif
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    $(document).ready(function() {
-        // Handler untuk tombol edit
-        $('.edit-btn').click(function() {
-            var id = $(this).data('id');
-            var url = "{{ route('staff.absensi.show', ':id') }}".replace(':id', id);
-
-            $.get(url, function(data) {
-                $('#editForm').attr('action', "{{ route('staff.absensi.update', ':id') }}".replace(':id', id));
-                $('#edit_tanggal').val(data.tanggal);
-
-                if (data.video) {
-                    $('#current_video').html('Video saat ini: <a href="' + data.video + '" target="_blank">Lihat Video</a>');
-                } else {
-                    $('#current_video').html('Belum ada video yang diunggah');
-                }
-
-                if (data.foto) {
-                    $('#current_foto').html('Foto saat ini: <a href="' + data.foto + '" target="_blank">Lihat Foto</a>');
-                } else {
-                    $('#current_foto').html('Belum ada foto yang diunggah');
-                }
-            });
-        });
-
-        // Handler untuk tombol lihat
-        $('.view-btn').click(function() {
-            var id = $(this).data('id');
-            var url = "{{ route('staff.absensi.show', ':id') }}".replace(':id', id);
-
-            $.get(url, function(data) {
-                $('#view_tanggal').text(new Date(data.tanggal).toLocaleDateString('id-ID'));
-
-                if (data.video) {
-                    $('#view_video').html('<a href="' + data.video + '" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-video me-1"></i> Lihat Video</a>');
-                } else {
-                    $('#view_video').html('<span class="text-muted">Tidak ada video</span>');
-                }
-
-                if (data.foto) {
-                    $('#view_foto').html('<a href="' + data.foto + '" target="_blank" class="btn btn-sm btn-outline-info"><i class="fas fa-image me-1"></i> Lihat Foto</a>');
-                } else {
-                    $('#view_foto').html('<span class="text-muted">Tidak ada foto</span>');
-                }
-            });
-        });
-
-        // Konfirmasi hapus
-        $('.delete-btn').click(function(e) {
-            e.preventDefault();
-            if (confirm('Apakah Anda yakin ingin menghapus data absensi ini?')) {
-                $(this).parent().submit();
-            }
-        });
-    });
-</script>
-@endpush
-
 @push('styles')
 <style>
     /* Responsive table */

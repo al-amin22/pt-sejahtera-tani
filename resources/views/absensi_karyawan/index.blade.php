@@ -46,8 +46,8 @@
                         @foreach($absensiKaryawans as $absensiKaryawan)
                         <tr>
                             <th scope="row">{{ $loop->iteration }}</th>
-                            <td>{{ $absensiKaryawan->absensi_id }}</td>
-                            <td>{{ $absensiKaryawan->karyawan_id }}</td>
+                            <td>{{ $absensiKaryawan->absensi->tanggal ?? '-' }}</td>
+                            <td>{{ $absensiKaryawan->karyawan->nama ?? '-' }}</td>
                             <td>
                                 <span class="badge
                                     @if($absensiKaryawan->status == 'Hadir') bg-success

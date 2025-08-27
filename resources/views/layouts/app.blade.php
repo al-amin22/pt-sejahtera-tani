@@ -73,7 +73,7 @@
                 <h4>Sistem Akuntansi</h4>
             </div>
             <div class="list-group list-group-flush">
-                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action bg-dark text-white">
                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                 </a>
                 <a href="{{ route('transaksi.index') }}" class="list-group-item list-group-item-action bg-dark text-white">

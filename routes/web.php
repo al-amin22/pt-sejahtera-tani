@@ -9,6 +9,7 @@ use App\Http\Controllers\MataUangController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\RekeningController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Staff\DetailTransaksiController as StaffDetailTransaksiController;
 use App\Http\Controllers\Staff\AbsensiKaryawanController as StaffAbsensiKaryawanController;
 use App\Http\Controllers\Staff\TransaksiController as StaffTransaksiController;
@@ -23,9 +24,8 @@ Route::get('/', function () {
 // ✅ Admin dashboard
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     // Dashboard admin
-    Route::get('/dashboard', function () {
-        return view('dashboard.admin');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/monthly-data', [DashboardController::class, 'monthlyData'])->name('dashboard.monthlyData');
     // Users
     Route::get('users', [UsersController::class, 'index'])->name('users.index');
     Route::post('users', [UsersController::class, 'store'])->name('users.store');

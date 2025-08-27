@@ -110,7 +110,7 @@
                     <div class="row text-center">
                         <div class="col-md-4 mb-3">
                             <div class="p-3 border rounded">
-                                <small class="text-muted d-block">Operasional Jambi</small>
+                                <small class="text-muted d-block">Pengeluaran di Jambi</small>
                                 <span class="fw-bold text-danger">Rp {{ number_format($operasionalJambi, 0, ',', '.') }}</span>
                             </div>
                         </div>
@@ -122,7 +122,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <div class="p-3 border rounded">
-                                <small class="text-muted d-block">Operasional Aceh</small>
+                                <small class="text-muted d-block">Pengeluaran di Aceh</small>
                                 <span class="fw-bold text-danger">Rp {{ number_format($operasionalAceh, 0, ',', '.') }}</span>
                             </div>
                         </div>
@@ -211,7 +211,6 @@
                                 Saldo Akhir: {{ number_format($saldoBulanan[$bulan]['saldo'] ?? 0, 0, ',', '.') }}
                             </td>
                         </tr>
-
 
                         @foreach($transaksiBulan as $item)
                         @php

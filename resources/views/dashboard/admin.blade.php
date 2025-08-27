@@ -303,7 +303,7 @@
                             <div class="text-danger mb-2">
                                 <i class="fas fa-tools fa-2x"></i>
                             </div>
-                            <h5>Rp {{ number_format($operasionalJambi + $transferAceh, 0, ',', '.') }}</h5>
+                            <h5>Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</h5>
                             <small class="text-muted">Total Pengeluaran</small>
                         </div>
                     </div>

@@ -14,66 +14,69 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         // Tahun aktif (default tahun berjalan)
-        // Ambil parameter filter
         $tahun = $request->get('tahun', date('Y'));
         $bulan = $request->get('bulan', '');
         $rekeningId = $request->get('rekening_id', '');
 
-        // Query transaksi dengan relasi
+        // =============================
+        // Transaksi utama (filtered)
+        // =============================
         $query = Transaksi::with(['details', 'details.dariRekening', 'details.keRekening', 'user'])
-            ->orderBy('tanggal_transaksi', 'asc'); // penting: urutkan dari awal tahun ke akhir
+            ->whereYear('tanggal_transaksi', $tahun)
+            ->orderBy('tanggal_transaksi', 'asc');
 
-        // Filter berdasarkan tahun
-        if ($tahun) {
-            $query->whereYear('tanggal_transaksi', $tahun);
-        }
-
-        // Filter berdasarkan bulan
         if ($bulan) {
             $query->whereMonth('tanggal_transaksi', $bulan);
         }
 
         $transaksi = $query->get();
 
-        // Total pemasukan dan pengeluaran tahun ini
-        $totalPemasukan = $transaksi
-            ->where('total', '<', 0)
-            ->sum(function ($trx) {
-                return abs($trx->total);
-            });
-
-        $totalPengeluaran = $transaksi
-            ->where('total', '>=', 0)
-            ->reject(function ($trx) {
-                // exclude operasional Aceh
-                return $trx->dari_rekening_id == 3 && $trx->ke_rekening_id == 4;
+        // =============================
+        // Statistik Alur Dana
+        // =============================
+        $danaDariChina = DetailTransaksi::where('dari_rekening_id', 1)
+            ->whereHas('transaksi', function ($q) use ($tahun) {
+                $q->whereYear('tanggal_transaksi', $tahun);
             })
-            ->sum('total');
-
-        // Saldo akhir tahun
-        $saldoAkhir = $totalPemasukan - $totalPengeluaran;
-
-        // Hitung statistik alur dana
-        $danaDariChina = DetailTransaksi::where('dari_rekening_id', 1)->sum('subtotal');
+            ->sum('subtotal');
 
         $operasionalJambi = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', '=', 4)
-            ->sum('subtotal');
-        $transferAceh = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', 3)
-            ->sum('subtotal');
-        $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)
-            ->where('ke_rekening_id', '=', 4)
+            ->where('ke_rekening_id', 4)
+            ->whereHas('transaksi', fn($q) => $q->whereYear('tanggal_transaksi', $tahun))
             ->sum('subtotal');
 
-        $saldoJambi = DetailTransaksi::where('ke_rekening_id', 2)->sum('subtotal')
+        $transferAceh = DetailTransaksi::where('dari_rekening_id', 2)
+            ->where('ke_rekening_id', 3)
+            ->whereHas('transaksi', fn($q) => $q->whereYear('tanggal_transaksi', $tahun))
+            ->sum('subtotal');
+
+        $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)
+            ->where('ke_rekening_id', 4)
+            ->whereHas('transaksi', fn($q) => $q->whereYear('tanggal_transaksi', $tahun))
+            ->sum('subtotal');
+
+        $saldoJambi = DetailTransaksi::where('ke_rekening_id', 2)
+            ->whereHas('transaksi', fn($q) => $q->whereYear('tanggal_transaksi', $tahun))
+            ->sum('subtotal')
             - $operasionalJambi
             - $transferAceh;
 
-        $saldoAceh = DetailTransaksi::where('ke_rekening_id', 3)->sum('subtotal')
+        $saldoAceh = DetailTransaksi::where('ke_rekening_id', 3)
+            ->whereHas('transaksi', fn($q) => $q->whereYear('tanggal_transaksi', $tahun))
+            ->sum('subtotal')
             - $operasionalAceh;
 
-        // Data untuk grafik bulanan - PERBAIKAN DI SINI
+        // =============================
+        // Statistik Total Tahun Ini
+        // =============================
+        $totalPemasukan = $danaDariChina;
+        $totalPengeluaran = $transferAceh + $operasionalJambi;
+
+        $saldoAkhir = $totalPemasukan - $totalPengeluaran;
+
+        // =============================
+        // Data untuk Grafik Bulanan
+        // =============================
         $bulananData = [];
         for ($i = 1; $i <= 12; $i++) {
             $pemasukanBulan = Transaksi::where('total', '<', 0)
@@ -93,8 +96,11 @@ class DashboardController extends Controller
             ];
         }
 
-        // Transaksi terbaru (5 transaksi terbaru)
+        // =============================
+        // Transaksi Terbaru
+        // =============================
         $transaksiTerbaru = Transaksi::with(['details', 'user'])
+            ->whereYear('tanggal_transaksi', $tahun)
             ->orderBy('tanggal_transaksi', 'desc')
             ->take(5)
             ->get();
@@ -112,7 +118,7 @@ class DashboardController extends Controller
             'operasionalJambi',
             'transferAceh',
             'operasionalAceh',
-            'bulananData', // PASTIKAN INI ADA
+            'bulananData',
             'transaksiTerbaru',
             'rekening',
             'tahun'

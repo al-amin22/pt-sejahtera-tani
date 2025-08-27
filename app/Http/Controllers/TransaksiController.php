@@ -15,13 +15,17 @@ class TransaksiController extends Controller
     public function index(Request $request)
     {
         // Ambil parameter filter
-        $tahun = $request->get('tahun', date('Y'));
-        $bulan = $request->get('bulan', '');
+        $tahun      = $request->get('tahun', date('Y'));
+        $bulan      = $request->get('bulan', '');
         $rekeningId = $request->get('rekening_id', '');
 
         // Query transaksi dengan relasi
-        $query = Transaksi::with(['details', 'details.dariRekening', 'details.keRekening', 'user'])
-            ->orderBy('tanggal_transaksi', 'asc'); // penting: urutkan dari awal tahun ke akhir
+        $query = Transaksi::with([
+            'details',
+            'details.dariRekening',
+            'details.keRekening',
+            'user'
+        ])->orderBy('tanggal_transaksi', 'asc'); // urutkan dari awal tahun ke akhir
 
         // Filter berdasarkan tahun
         if ($tahun) {
@@ -37,35 +41,30 @@ class TransaksiController extends Controller
 
         // Ambil data rekening
         $rekening = Rekening::all();
-
-        // Hitung statistik alur dana
         $operasionalJambi = DetailTransaksi::where('dari_rekening_id', 2)
-            ->where('ke_rekening_id', '!=', 3)
+            ->where('ke_rekening_id', 4)
             ->sum('subtotal');
         $transferAceh = DetailTransaksi::where('dari_rekening_id', 2)
             ->where('ke_rekening_id', 3)
             ->sum('subtotal');
-        $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)
-            ->sum('subtotal');
-        $danaDariChina = DetailTransaksi::where('dari_rekening_id', 1)->sum('subtotal');
-        $saldoJambi = DetailTransaksi::where('ke_rekening_id', 2)->sum('subtotal') - $operasionalJambi - $transferAceh;
-        $saldoAceh = DetailTransaksi::where('ke_rekening_id', 3)->sum('subtotal') - $operasionalAceh;
+        $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)->sum('subtotal');
 
+        // Hitung statistik alur dana
+        $danaDariChina   = DetailTransaksi::where('dari_rekening_id', 1)->sum('subtotal');
+        $saldoJambi      = DetailTransaksi::where('ke_rekening_id', 2)->sum('subtotal') - $operasionalJambi - $transferAceh;
+        $saldoAceh       = DetailTransaksi::where('ke_rekening_id', 3)->sum('subtotal') - $operasionalAceh;
 
         // Kelompokkan transaksi per bulan
         $transaksiPerBulan = $transaksi->groupBy(function ($item) {
             return Carbon::parse($item->tanggal_transaksi)->format('Y-m');
         });
 
-        // Urutkan bulan dari tertinggi ke terendah
-        $transaksiPerBulan = $transaksiPerBulan->sortKeysDesc();
-
         // Hitung saldo bulanan kumulatif
-        $saldoBulanan = [];
+        $saldoBulanan    = [];
         $saldoSebelumnya = 0;
 
         foreach ($transaksiPerBulan as $bulanKey => $transaksiBulan) {
-            $pemasukan = 0;
+            $pemasukan   = 0;
             $pengeluaran = 0;
 
             foreach ($transaksiBulan as $trx) {
@@ -77,14 +76,18 @@ class TransaksiController extends Controller
             }
 
             $saldoBulanan[$bulanKey] = [
-                'pemasukan' => $pemasukan,
+                'pemasukan'   => $pemasukan,
                 'pengeluaran' => $pengeluaran,
-                'saldo' => $saldoSebelumnya + $pemasukan - $pengeluaran
+                'saldo'       => $saldoSebelumnya + $pemasukan - $pengeluaran
             ];
 
-            // Update saldo sebelumnya untuk bulan berikutnya
+            // Update saldo untuk bulan berikutnya
             $saldoSebelumnya = $saldoBulanan[$bulanKey]['saldo'];
         }
+
+        // Urutkan agar tabel tampil dari bulan terbaru → terlama
+        $transaksiPerBulan = $transaksiPerBulan->sortKeysDesc();
+        $saldoBulanan      = collect($saldoBulanan)->sortKeysDesc()->toArray();
 
         // Total pemasukan dan pengeluaran tahun ini
         $totalPemasukan = $transaksi->where('total', '<', 0)->sum(function ($trx) {

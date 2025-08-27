@@ -203,13 +203,18 @@
                     </thead>
                     <tbody>
                         @foreach($transaksiPerBulan as $bulan => $transaksiBulan)
+                        @php
+                        $currentMonth = \Carbon\Carbon::parse($bulan . '-01');
+                        $previousMonth = $currentMonth->copy()->subMonth()->format('Y-m');
+                        $sisaSaldoBulanSebelumnya = $saldoBulanan[$previousMonth]['saldo'] ?? 0;
+                        @endphp
                         <tr class="table-secondary">
-                            <td colspan="8" class="text-center fw-bold">
-                                {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }} -
-                                Pemasukan: {{ number_format($saldoBulanan[$bulan]['pemasukan'] ?? 0, 0, ',', '.') }} -
-                                Pengeluaran: {{ number_format($saldoBulanan[$bulan]['pengeluaran'] ?? 0, 0, ',', '.') }} -
-                                Saldo Akhir:
-                                {{ number_format(($saldoBulanan[$bulan]['pemasukan'] ?? 0) - ($saldoBulanan[$bulan]['pengeluaran'] ?? 0), 0, ',', '.') }}
+                            <td colspan="8" class="text-center fw-bold"> Bulan
+                                {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }} =
+                                Pemasukan: {{ number_format($saldoBulanan[$bulan]['pemasukan'] ?? 0, 0, ',', '.') }} +
+                                Sisa saldo bulan sebelumnya : {{ number_format($sisaSaldoBulanSebelumnya, 0, ',', '.') }} -
+                                Pengeluaran: {{ number_format($saldoBulanan[$bulan]['pengeluaran'] ?? 0, 0, ',', '.') }} =
+                                Saldo Akhir: {{ number_format($saldoBulanan[$bulan]['saldo'] ?? 0, 0, ',', '.') }}
                             </td>
                         </tr>
 

@@ -39,9 +39,6 @@ class TransaksiController extends Controller
         $rekening = Rekening::all();
 
         // Hitung statistik alur dana
-        $danaDariChina = DetailTransaksi::where('dari_rekening_id', 1)->sum('subtotal');
-        $saldoJambi = DetailTransaksi::where('ke_rekening_id', 2)->sum('subtotal');
-        $saldoAceh = DetailTransaksi::where('ke_rekening_id', 3)->sum('subtotal');
         $operasionalJambi = DetailTransaksi::where('dari_rekening_id', 2)
             ->where('ke_rekening_id', '!=', 3)
             ->sum('subtotal');
@@ -50,11 +47,18 @@ class TransaksiController extends Controller
             ->sum('subtotal');
         $operasionalAceh = DetailTransaksi::where('dari_rekening_id', 3)
             ->sum('subtotal');
+        $danaDariChina = DetailTransaksi::where('dari_rekening_id', 1)->sum('subtotal');
+        $saldoJambi = DetailTransaksi::where('ke_rekening_id', 2)->sum('subtotal') - $operasionalJambi - $transferAceh;
+        $saldoAceh = DetailTransaksi::where('ke_rekening_id', 3)->sum('subtotal') - $operasionalAceh;
+
 
         // Kelompokkan transaksi per bulan
         $transaksiPerBulan = $transaksi->groupBy(function ($item) {
             return Carbon::parse($item->tanggal_transaksi)->format('Y-m');
         });
+
+        // Urutkan bulan dari tertinggi ke terendah
+        $transaksiPerBulan = $transaksiPerBulan->sortKeysDesc();
 
         // Hitung saldo bulanan kumulatif
         $saldoBulanan = [];

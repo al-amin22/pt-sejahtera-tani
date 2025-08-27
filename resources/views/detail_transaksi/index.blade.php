@@ -206,8 +206,13 @@
                     </tbody>
                     <tfoot class="table-light">
                         <tr>
+                            @php
+                            $totalPemasukan = $detail_transaksi->where('jenis', 'pemasukan')->sum('subtotal');
+                            $totalPengeluaran = $detail_transaksi->where('jenis', 'pengeluaran')->sum('subtotal');
+                            $grandTotal = $totalPemasukan - $totalPengeluaran;
+                            @endphp
                             <th colspan="7" class="text-end">Total</th>
-                            <th class="text-end">Rp {{ number_format($detail_transaksi->sum('subtotal'), 0, ',', '.') }}</th>
+                            <th class="text-end">Rp {{ number_format($grandTotal, 0, ',', '.') }}</th>
                             <th colspan="6"></th>
                         </tr>
                     </tfoot>

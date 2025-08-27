@@ -285,7 +285,7 @@ class TransaksiController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with(['user', 'pemasok', 'mataUang', 'detailTransaksi'])->findOrFail($id);
+        $transaksi = Transaksi::with(['user', 'mataUang', 'detailTransaksi'])->findOrFail($id);
         return view('transaksi.show', compact('transaksi'));
     }
 

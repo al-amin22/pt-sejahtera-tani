@@ -264,7 +264,7 @@ class TransaksiController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::with(['user', 'pemasok', 'mataUang', 'detailTransaksi'])
+        $transaksi = Transaksi::with(['user', 'mataUang', 'detailTransaksi'])
             ->findOrFail($id);
 
         // filter detail transaksi langsung di collection

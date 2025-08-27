@@ -91,7 +91,9 @@
                 <a href="{{ route('staff.absensi_karyawan.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
                     <i class="fas fa-calendar-check me-2"></i> Absensi Karyawan
                 </a>
-
+                <a href="{{ route('staff.hasil_produksi.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-box me-2"></i> Hasil Produksi
+                </a>
             </div>
         </div>
 

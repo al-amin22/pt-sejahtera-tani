@@ -97,6 +97,9 @@
                 <a href="{{ route('rekening.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
                     <i class="fas fa-university me-2"></i> Rekening
                 </a>
+                <a href="{{ route('hasil_produksi.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-boxes me-2"></i> Hasil Produksi
+                </a>
                 <!-- <a href="{{ route('users.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
                     <i class="fas fa-users me-2"></i> Pengguna
                 </a> -->

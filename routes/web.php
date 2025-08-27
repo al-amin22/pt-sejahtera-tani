@@ -10,11 +10,13 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\RekeningController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HasilProduksiController;
 use App\Http\Controllers\Staff\DetailTransaksiController as StaffDetailTransaksiController;
 use App\Http\Controllers\Staff\AbsensiKaryawanController as StaffAbsensiKaryawanController;
 use App\Http\Controllers\Staff\TransaksiController as StaffTransaksiController;
 use App\Http\Controllers\Staff\AbsensiController as StaffAbsensiController;
 use App\Http\Controllers\Staff\KaryawanController as StaffKaryawanController;
+use App\Http\Controllers\Staff\HasilProduksiController as StaffHasilProduksiController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -85,6 +87,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     //eksport pdf
     Route::get('transaksi/export-pdf', [TransaksiController::class, 'exportPdf'])->name('transaksi.export-pdf');
+
+    //hasil produksi
+    Route::get('hasil-produksi', [HasilProduksiController::class, 'index'])->name('hasil_produksi.index');
+    Route::post('hasil-produksi', [HasilProduksiController::class, 'store'])->name('hasil_produksi.store');
+    Route::get('hasil-produksi/{id}', [HasilProduksiController::class, 'show'])->name('hasil_produksi.show');
+    Route::put('hasil-produksi/{id}', [HasilProduksiController::class, 'update'])->name('hasil_produksi.update');
+    Route::delete('hasil-produksi/{id}', [HasilProduksiController::class, 'destroy'])->name('hasil_produksi.destroy');
 });
 
 // ✅ Staff dashboard
@@ -131,6 +140,13 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::get('karyawan/{id}', [StaffKaryawanController::class, 'show'])->name('karyawan.show');
     Route::put('karyawan/{id}', [StaffKaryawanController::class, 'update'])->name('karyawan.update');
     Route::delete('karyawan/{id}', [StaffKaryawanController::class, 'destroy'])->name('karyawan.destroy');
+
+    //hasil produksi
+    Route::get('hasil-produksi', [StaffHasilProduksiController::class, 'index'])->name('hasil_produksi.index');
+    Route::post('hasil-produksi', [StaffHasilProduksiController::class, 'store'])->name('hasil_produksi.store');
+    Route::get('hasil-produksi/{id}', [StaffHasilProduksiController::class, 'show'])->name('hasil_produksi.show');
+    Route::put('hasil-produksi/{id}', [StaffHasilProduksiController::class, 'update'])->name('hasil_produksi.update');
+    Route::delete('hasil-produksi/{id}', [StaffHasilProduksiController::class, 'destroy'])->name('hasil_produksi.destroy');
 });
 
 // ✅ Finance dashboard

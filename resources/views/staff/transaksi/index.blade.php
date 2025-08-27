@@ -69,7 +69,7 @@
     <div class="row mb-4 align-items-center">
         <div class="col">
             <h4 class="mb-0">
-                <i class="fas fa-exchange-alt me-2"></i> Daftar Transaksi Bulanan
+                <i class="fas fa-exchange-alt me-2"></i> DAFTAR PENGELUARAN DI ACEH
             </h4>
             <p class="text-muted">Sistem Pelacakan Alur Dana Perusahaan</p>
         </div>
@@ -79,14 +79,11 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card card-shadow border-0">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0"><i class="fas fa-project-diagram me-2"></i>Visualisasi Alur Dana Di Aceh</h5>
-                </div>
                 <div class="card-body">
                     <div class="flow-chart">
                         <div class="col-md-12 mb-3">
                             <div class="p-3 border rounded">
-                                <small class="text-muted d-block">Operasional Aceh</small>
+                                <small class="text-muted d-block">Pengeluaran di Aceh</small>
                                 <span class="fw-bold text-danger">Rp {{ number_format($operasionalAceh, 0, ',', '.') }}</span>
                             </div>
                         </div>

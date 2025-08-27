@@ -170,74 +170,6 @@
         </div>
     </div>
 
-    <!-- Ringkasan Keuangan -->
-    <!-- Ringkasan Keuangan -->
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card bg-success text-white">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-8">
-                            <h6 class="card-title">Total Pemasukan</h6>
-                            <h3 class="card-text">
-                                Rp <span class="counter" data-target="{{ $totalPemasukan }}">0</span>
-                            </h3>
-                            <p class="card-text"><small>Tahun {{ $tahun }}</small></p>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="stat-icon">
-                                <i class="fas fa-arrow-down"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card bg-danger text-white">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-8">
-                            <h6 class="card-title">Total Pengeluaran</h6>
-                            <h3 class="card-text">
-                                Rp <span class="counter" data-target="{{ $totalPengeluaran }}">0</span>
-                            </h3>
-                            <p class="card-text"><small>Tahun {{ $tahun }}</small></p>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="stat-icon">
-                                <i class="fas fa-arrow-up"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card stat-card {{ $saldoAkhir >= 0 ? 'bg-info' : 'bg-warning' }} text-white">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-8">
-                            <h6 class="card-title">Saldo Akhir</h6>
-                            <h3 class="card-text">
-                                Rp <span class="counter" data-target="{{ abs($saldoAkhir) }}">0</span>
-                            </h3>
-                            <p class="card-text"><small>{{ $saldoAkhir >= 0 ? 'Surplus' : 'Defisit' }} Tahun {{ $tahun }}</small></p>
-                        </div>
-                        <div class="col-4 text-end">
-                            <div class="stat-icon">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     <!-- Visualisasi Alur Dana -->
     <div class="row mb-4">
         <div class="col-12">
@@ -262,13 +194,13 @@
                 </div>
                 <div class="row text-center mt-4">
                     <div class="col-md-4 mb-3">
-                        <div class="p-3 border rounded bg-light"> <small class="text-muted d-block">Operasional Jambi</small> <span class="fw-bold text-danger fs-5">Rp {{ number_format($operasionalJambi, 0, ',', '.') }}</span> </div>
+                        <div class="p-3 border rounded bg-light"> <small class="text-muted d-block">Pengeluaran di Jambi</small> <span class="fw-bold text-danger fs-5">Rp {{ number_format($operasionalJambi, 0, ',', '.') }}</span> </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="p-3 border rounded bg-light"> <small class="text-muted d-block">Transfer Jambi ke Aceh</small> <span class="fw-bold text-primary fs-5">Rp {{ number_format($transferAceh, 0, ',', '.') }}</span> </div>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <div class="p-3 border rounded bg-light"> <small class="text-muted d-block">Operasional Aceh</small> <span class="fw-bold text-danger fs-5">Rp {{ number_format($operasionalAceh, 0, ',', '.') }}</span> </div>
+                        <div class="p-3 border rounded bg-light"> <small class="text-muted d-block">Pengeluaran di Aceh</small> <span class="fw-bold text-danger fs-5">Rp {{ number_format($operasionalAceh, 0, ',', '.') }}</span> </div>
                     </div>
                 </div>
             </div>
@@ -371,8 +303,8 @@
                             <div class="text-danger mb-2">
                                 <i class="fas fa-tools fa-2x"></i>
                             </div>
-                            <h5>Rp {{ number_format($operasionalJambi + $operasionalAceh, 0, ',', '.') }}</h5>
-                            <small class="text-muted">Total Operasional</small>
+                            <h5>Rp {{ number_format($operasionalJambi + $transferAceh, 0, ',', '.') }}</h5>
+                            <small class="text-muted">Total Pengeluaran</small>
                         </div>
                     </div>
                 </div>

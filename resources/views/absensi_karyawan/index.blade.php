@@ -114,7 +114,7 @@
                         <select class="form-select" id="status" name="status" required>
                             <option value="" selected disabled>Pilih Status</option>
                             <option value="hadir">Hadir</option>
-                            <option value="tidak hasdir">Tidak Hadir</option>
+                            <option value="tidak hadir">Tidak Hadir</option>
                         </select>
                     </div>
                 </div>

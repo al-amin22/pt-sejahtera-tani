@@ -91,6 +91,91 @@
                                 </form>
                             </td>
                         </tr>
+                        <!-- Modal Edit Absensi -->
+                        <div class="modal fade" id="editAbsensiModal{{ $absensi->id }}" tabindex="-1" aria-labelledby="editAbsensiModalLabel{{ $absensi->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Data Absensi</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form action="{{ route('absensi.update', $absensi->id) }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="tanggal{{ $absensi->id }}" class="form-label">Tanggal</label>
+                                                <input type="date" class="form-control" id="tanggal{{ $absensi->id }}" name="tanggal" value="{{ $absensi->tanggal }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="video{{ $absensi->id }}" class="form-label">Video</label>
+                                                <input type="file" class="form-control" id="video{{ $absensi->id }}" name="video" accept="video/mp4,video/mov,video/avi">
+                                                @if($absensi->video)
+                                                <div class="form-text">Video saat ini: <a href="{{ asset($absensi->video) }}" target="_blank">Lihat Video</a></div>
+                                                @else
+                                                <div class="form-text">Belum ada video yang diunggah</div>
+                                                @endif
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="foto{{ $absensi->id }}" class="form-label">Foto</label>
+                                                <input type="file" class="form-control" id="foto{{ $absensi->id }}" name="foto" accept="image/jpeg,image/png,image/jpg">
+                                                @if($absensi->foto)
+                                                <div class="form-text">Foto saat ini: <a href="{{ asset($absensi->foto) }}" target="_blank">Lihat Foto</a></div>
+                                                @else
+                                                <div class="form-text">Belum ada foto yang diunggah</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-primary">Perbarui</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Lihat Absensi -->
+                        <div class="modal fade" id="viewAbsensiModal{{ $absensi->id }}" tabindex="-1" aria-labelledby="viewAbsensiModalLabel{{ $absensi->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Detail Data Absensi</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4 fw-bold">Tanggal:</div>
+                                            <div class="col-md-8">{{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-4 fw-bold">Video:</div>
+                                            <div class="col-md-8">
+                                                @if($absensi->video)
+                                                <a href="{{ asset($absensi->video) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-video"></i> Lihat Video
+                                                </a>
+                                                @else
+                                                <span class="text-muted">Tidak ada video</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 fw-bold">Foto:</div>
+                                            <div class="col-md-8">
+                                                @if($absensi->foto)
+                                                <a href="{{ asset($absensi->foto) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                                    <i class="fas fa-image"></i> Lihat Foto
+                                                </a>
+                                                @else
+                                                <span class="text-muted">Tidak ada foto</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @endforeach
                     </tbody>
                 </table>
@@ -134,91 +219,7 @@
     </div>
 </div>
 
-<!-- Modal Edit Absensi -->
-<div class="modal fade" id="editAbsensiModal{{ $absensi->id }}" tabindex="-1" aria-labelledby="editAbsensiModalLabel{{ $absensi->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Data Absensi</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="{{ route('absensi.update', $absensi->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="tanggal{{ $absensi->id }}" class="form-label">Tanggal</label>
-                        <input type="date" class="form-control" id="tanggal{{ $absensi->id }}" name="tanggal" value="{{ $absensi->tanggal }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="video{{ $absensi->id }}" class="form-label">Video</label>
-                        <input type="file" class="form-control" id="video{{ $absensi->id }}" name="video" accept="video/mp4,video/mov,video/avi">
-                        @if($absensi->video)
-                        <div class="form-text">Video saat ini: <a href="{{ asset($absensi->video) }}" target="_blank">Lihat Video</a></div>
-                        @else
-                        <div class="form-text">Belum ada video yang diunggah</div>
-                        @endif
-                    </div>
-                    <div class="mb-3">
-                        <label for="foto{{ $absensi->id }}" class="form-label">Foto</label>
-                        <input type="file" class="form-control" id="foto{{ $absensi->id }}" name="foto" accept="image/jpeg,image/png,image/jpg">
-                        @if($absensi->foto)
-                        <div class="form-text">Foto saat ini: <a href="{{ asset($absensi->foto) }}" target="_blank">Lihat Foto</a></div>
-                        @else
-                        <div class="form-text">Belum ada foto yang diunggah</div>
-                        @endif
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Perbarui</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<!-- Modal Lihat Absensi -->
-<div class="modal fade" id="viewAbsensiModal{{ $absensi->id }}" tabindex="-1" aria-labelledby="viewAbsensiModalLabel{{ $absensi->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detail Data Absensi</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3">
-                    <div class="col-md-4 fw-bold">Tanggal:</div>
-                    <div class="col-md-8">{{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-4 fw-bold">Video:</div>
-                    <div class="col-md-8">
-                        @if($absensi->video)
-                        <a href="{{ asset($absensi->video) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-video"></i> Lihat Video
-                        </a>
-                        @else
-                        <span class="text-muted">Tidak ada video</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4 fw-bold">Foto:</div>
-                    <div class="col-md-8">
-                        @if($absensi->foto)
-                        <a href="{{ asset($absensi->foto) }}" target="_blank" class="btn btn-sm btn-outline-info">
-                            <i class="fas fa-image"></i> Lihat Foto
-                        </a>
-                        @else
-                        <span class="text-muted">Tidak ada foto</span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 @push('styles')
 <style>

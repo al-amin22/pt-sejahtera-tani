@@ -208,7 +208,8 @@
                                 {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }} -
                                 Pemasukan: {{ number_format($saldoBulanan[$bulan]['pemasukan'] ?? 0, 0, ',', '.') }} -
                                 Pengeluaran: {{ number_format($saldoBulanan[$bulan]['pengeluaran'] ?? 0, 0, ',', '.') }} -
-                                Saldo Akhir: {{ number_format($saldoBulanan[$bulan]['saldo'] ?? 0, 0, ',', '.') }}
+                                Saldo Akhir:
+                                {{ number_format(($saldoBulanan[$bulan]['pemasukan'] ?? 0) - ($saldoBulanan[$bulan]['pengeluaran'] ?? 0), 0, ',', '.') }}
                             </td>
                         </tr>
 

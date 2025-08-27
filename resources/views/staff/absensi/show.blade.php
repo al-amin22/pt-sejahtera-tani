@@ -8,7 +8,7 @@
             <h2><i class="fas fa-calendar-check me-2"></i> Detail Absensi</h2>
         </div>
         <div class="col-auto">
-            <a href="{{ route('absensi.index') }}" class="btn btn-secondary">
+            <a href="{{ route('staff.absensi.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left me-2"></i> Kembali
             </a>
         </div>

@@ -208,7 +208,7 @@
                         <tr>
                             @php
                             $totalPemasukan = $detail_transaksi->where('jenis', 'pemasukan')->sum('subtotal');
-                            $totalPengeluaran = $detail_transaksi->where('jenis', 'pengeluaran')->sum('subtotal');
+                            $totalPengeluaran = $detail_transaksi->where('jenis', 'pengeluaran')->where('dari_rekening_id', 2)->sum('subtotal');
                             $grandTotal = $totalPemasukan - $totalPengeluaran;
                             @endphp
                             <th colspan="7" class="text-end">Total</th>

@@ -213,7 +213,7 @@
                                 {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }} =
                                 Pemasukan: {{ number_format($saldoBulanan[$bulan]['pemasukan'] ?? 0, 0, ',', '.') }} +
                                 Sisa saldo bulan sebelumnya : {{ number_format($sisaSaldoBulanSebelumnya, 0, ',', '.') }} -
-                                Pengeluaran: {{ number_format($saldoBulanan[$bulan]['pengeluaran'] ?? 0, 0, ',', '.') }} =
+                                Pengeluaran: {{ number_format($saldoBulanan[$bulan]['pengeluaran']['dari_rekening_id'][2s] ?? 0, 0, ',', '.') }} =
                                 Saldo Akhir: {{ number_format($saldoBulanan[$bulan]['saldo'] ?? 0, 0, ',', '.') }}
                             </td>
                         </tr>

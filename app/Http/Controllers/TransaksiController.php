@@ -71,7 +71,14 @@ class TransaksiController extends Controller
                 if ($trx->total < 0) {
                     $pemasukan += abs($trx->total);
                 } else {
-                    $pengeluaran += $trx->total;
+                    // Cek pengeluaran yang ingin dikecualikan
+                    $exclude = $trx->details->contains(function ($detail) {
+                        return $detail->dari_rekening_id == 3 && $detail->ke_rekening_id == 4;
+                    });
+
+                    if (!$exclude) {
+                        $pengeluaran += $trx->total;
+                    }
                 }
             }
 
@@ -81,9 +88,10 @@ class TransaksiController extends Controller
                 'saldo'       => $saldoSebelumnya + $pemasukan - $pengeluaran
             ];
 
-            // Update saldo untuk bulan berikutnya
             $saldoSebelumnya = $saldoBulanan[$bulanKey]['saldo'];
         }
+
+
 
         // Urutkan agar tabel tampil dari bulan terbaru → terlama
         $transaksiPerBulan = $transaksiPerBulan->sortKeysDesc();

@@ -78,6 +78,17 @@
                                                 <textarea class="form-control" id="keterangan" name="keterangan">{{ $item->keterangan }}</textarea>
                                             </div>
                                             <div class="mb-3">
+                                                <label for="tanggal_absensi" class="form-label">Tanggal</label>
+                                                <input type="date"
+                                                    class="form-control"
+                                                    id="tanggal_absensi"
+                                                    name="tanggal_absensi"
+                                                    value="{{ old('tanggal_absensi', $item->absensi_karyawan->absensi->tanggal ?? '') }}"
+                                                    required>
+                                            </div>
+
+
+                                            <!-- <div class="mb-3">
                                                 <label for="absensi_karyawan_id" class="form-label">Tanggal</label>
                                                 <select class="form-select" id="absensi_karyawan_id" name="absensi_karyawan_id" required>
                                                     <option value="">Pilih Tanggal Hari Ini</option>
@@ -87,7 +98,7 @@
                                                     </option>
                                                     @endforeach
                                                 </select>
-                                            </div>
+                                            </div> -->
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -161,6 +172,16 @@
                         <textarea class="form-control" id="keterangan" name="keterangan"></textarea>
                     </div>
                     <div class="mb-3">
+                        <label for="tanggal_absensi" class="form-label">Tanggal</label>
+                        <input type="date"
+                            class="form-control"
+                            id="tanggal_absensi"
+                            name="tanggal_absensi"
+                            value="{{ old('tanggal_absensi', $item->absensi_karyawan->absensi->tanggal ?? '') }}"
+                            required>
+                    </div>
+
+                    <!-- <div class="mb-3">
                         <label for="absensi_karyawan_id" class="form-label">Tanggal</label>
                         <select class="form-select" id="absensi_karyawan_id" name="absensi_karyawan_id" required>
                             <option value="">Pilih Tanggal Hari Ini</option>
@@ -170,7 +191,7 @@
                             </option>
                             @endforeach
                         </select>
-                    </div>
+                    </div> -->
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </form>
             </div>

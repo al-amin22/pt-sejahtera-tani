@@ -10,21 +10,30 @@ use Carbon\Carbon;
 
 class HasilProduksiController extends Controller
 {
+
     public function index()
     {
+        $absensiKaryawans = AbsensiKaryawan::with('absensi')->get();
         $hasilProduksis = HasilProduksi::all();
-        // ambil tanggal hari ini
-        $today = now()->toDateString(); // tanggal hari ini
 
-        // Ambil data absensi_karyawan tapi hanya yg tanggal = hari ini
-        $absensiKaryawans = AbsensiKaryawan::with('absensi')
-            ->whereHas('absensi', function ($q) use ($today) {
-                $q->whereDate('tanggal', $today);
-            })
-            ->get();
-
-        return view('staff.hasil_produksi.index', compact('hasilProduksis', 'absensiKaryawans'));
+        return view('staff.hasil_produksi.index', compact('absensiKaryawans', 'hasilProduksis'));
     }
+
+    // public function index()
+    // {
+    //     // $hasilProduksis = HasilProduksi::all();
+    //     // // ambil tanggal hari ini
+    //     // $today = now()->toDateString(); // tanggal hari ini
+
+    //     // Ambil data absensi_karyawan tapi hanya yg tanggal = hari ini
+    //     $absensiKaryawans = AbsensiKaryawan::with('absensi')
+    //         ->whereHas('absensi', function ($q) {
+    //             $q->whereDate('tanggal');
+    //         })
+    //         ->get();
+
+    //     return view('staff.hasil_produksi.index', compact('hasilProduksis', 'absensiKaryawans'));
+    // }
 
     public function store(Request $request)
     {

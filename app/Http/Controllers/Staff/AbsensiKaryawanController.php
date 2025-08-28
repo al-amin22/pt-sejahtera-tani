@@ -15,7 +15,8 @@ class AbsensiKaryawanController extends Controller
     {
         try {
             $absensiKaryawans = AbsensiKaryawan::with(['absensi', 'karyawan'])->get();
-            $absensis = Absensi::whereDate('tanggal', Carbon::today())->get();
+            // $absensis = Absensi::whereDate('tanggal', Carbon::today())->get();
+            $absensis = Absensi::all();
             $karyawans = Karyawan::all();
             return view('staff.absensi_karyawan.index', compact('absensiKaryawans', 'absensis', 'karyawans'));
         } catch (\Exception $e) {

@@ -68,18 +68,10 @@ class TransaksiController extends Controller
             $pengeluaran = 0;
 
             foreach ($transaksiBulan as $trx) {
-                // Pemasukan semua
                 if ($trx->total < 0) {
                     $pemasukan += abs($trx->total);
                 } else {
-                    // Pengeluaran hanya dari rekening ID 2
-                    if (isset($trx->details)) {
-                        foreach ($trx->details as $detail) {
-                            if ($detail->dari_rekening_id == 2) {
-                                $pengeluaran += $detail->total;
-                            }
-                        }
-                    }
+                    $pengeluaran += $trx->total;
                 }
             }
 
@@ -89,6 +81,7 @@ class TransaksiController extends Controller
                 'saldo'       => $saldoSebelumnya + $pemasukan - $pengeluaran
             ];
 
+            // Update saldo untuk bulan berikutnya
             $saldoSebelumnya = $saldoBulanan[$bulanKey]['saldo'];
         }
 

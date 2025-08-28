@@ -59,7 +59,7 @@ class TransaksiController extends Controller
             return Carbon::parse($item->tanggal_transaksi)->format('Y-m');
         });
 
-        // Hitung saldo bulanan
+        // Hitung saldo bulanan kumulatif
         $saldoBulanan    = [];
         $saldoSebelumnya = 0;
 
@@ -68,12 +68,17 @@ class TransaksiController extends Controller
             $pengeluaran = 0;
 
             foreach ($transaksiBulan as $trx) {
+                // Pemasukan semua
                 if ($trx->total < 0) {
                     $pemasukan += abs($trx->total);
                 } else {
-                    // Hanya pengeluaran dari rekening ID 2
-                    if ($trx->dari_rekening_id == 2) {
-                        $pengeluaran += $trx->total;
+                    // Pengeluaran hanya dari rekening ID 2
+                    if (isset($trx->details)) {
+                        foreach ($trx->details as $detail) {
+                            if ($detail->dari_rekening_id == 2) {
+                                $pengeluaran += $detail->total;
+                            }
+                        }
                     }
                 }
             }
@@ -86,7 +91,6 @@ class TransaksiController extends Controller
 
             $saldoSebelumnya = $saldoBulanan[$bulanKey]['saldo'];
         }
-
 
         // Urutkan agar tabel tampil dari bulan terbaru → terlama
         $transaksiPerBulan = $transaksiPerBulan->sortKeysDesc();

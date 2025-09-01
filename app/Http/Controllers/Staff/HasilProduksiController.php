@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\HasilProduksi;
 use App\Models\AbsensiKaryawan;
+use App\Models\Absensi;
 use Carbon\Carbon;
 
 class HasilProduksiController extends Controller
@@ -15,8 +16,9 @@ class HasilProduksiController extends Controller
     {
         $absensiKaryawans = AbsensiKaryawan::with('absensi')->get();
         $hasilProduksis = HasilProduksi::all();
+        $absensis = AbsensiKaryawan::with('absensi')->get();
 
-        return view('staff.hasil_produksi.index', compact('absensiKaryawans', 'hasilProduksis'));
+        return view('staff.hasil_produksi.index', compact('absensiKaryawans', 'hasilProduksis', 'absensis'));
     }
 
     // public function index()
@@ -46,9 +48,13 @@ class HasilProduksiController extends Controller
                 'keterangan' => 'nullable|string|max:500',
             ]);
 
+            // Ambil tanggal dari tabel absensi via relasi
+            $absensiKaryawan = AbsensiKaryawan::with('absensi')->findOrFail($validatedData['absensi_karyawan_id']);
+            $validatedData['tanggal'] = $absensiKaryawan->absensi->tanggal;
+
             HasilProduksi::create($validatedData);
 
-            return redirect()->back()->with('success', 'Data hasil produksi Hari ini berhasil disimpan.');
+            return redirect()->back()->with('success', 'Data hasil produksi hari ini berhasil disimpan.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -66,13 +72,16 @@ class HasilProduksiController extends Controller
             ]);
 
             $hasilProduksi = HasilProduksi::findOrFail($id);
+
+            // Update data
             $hasilProduksi->update($validatedData);
 
-            return redirect()->back()->with('success', 'Data hasil produksi Hari ini berhasil diperbarui.');
+            return redirect()->back()->with('success', 'Data hasil produksi hari ini berhasil diperbarui.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     public function destroy($id)
     {

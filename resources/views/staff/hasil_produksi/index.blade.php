@@ -78,13 +78,15 @@
                                                 <textarea class="form-control" id="keterangan" name="keterangan">{{ $item->keterangan }}</textarea>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="tanggal_absensi" class="form-label">Tanggal</label>
-                                                <input type="date"
-                                                    class="form-control"
-                                                    id="tanggal_absensi"
-                                                    name="tanggal_absensi"
-                                                    value="{{ old('tanggal_absensi', $item->absensi_karyawan->absensi->tanggal ?? '') }}"
-                                                    required>
+                                                <label for="absensi_karyawan_id" class="form-label">Pilih Tanggal</label>
+                                                <select class="form-select" id="absensi_karyawan_id" name="absensi_karyawan_id" required>
+                                                    <option value="" selected disabled>Pilih Absensi</option>
+                                                    @foreach($absensis as $absensiKaryawan)
+                                                    <option value="{{ $absensiKaryawan->id }}">
+                                                        {{ \Carbon\Carbon::parse($absensiKaryawan->absensi->tanggal)->format('d/m/Y') }}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
 
 
@@ -172,13 +174,15 @@
                         <textarea class="form-control" id="keterangan" name="keterangan"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="tanggal_absensi" class="form-label">Tanggal</label>
-                        <input type="date"
-                            class="form-control"
-                            id="tanggal_absensi"
-                            name="tanggal_absensi"
-                            value="{{ old('tanggal_absensi', $item->absensi_karyawan->absensi->tanggal ?? '') }}"
-                            required>
+                        <label for="absensi_karyawan_id" class="form-label">Pilih tanggal</label>
+                        <select class="form-select" id="absensi_karyawan_id" name="absensi_karyawan_id" required>
+                            <option value="" selected disabled>Pilih Absensi</option>
+                            @foreach($absensis as $absensiKaryawan)
+                            <option value="{{ $absensiKaryawan->id }}">
+                                {{ \Carbon\Carbon::parse($absensiKaryawan->absensi->tanggal)->format('d/m/Y') }}
+                            </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <!-- <div class="mb-3">

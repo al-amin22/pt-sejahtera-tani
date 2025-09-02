@@ -50,7 +50,7 @@
                                 <div class="card-body text-center">
                                     <h6 class="card-title mb-2">{{ $jenis }}</h6>
                                     <p class="fs-5 fw-bold text-success mb-0">
-                                        {{ number_format($total, 2) }} Kg
+                                        {{ number_format($total, 2) }} {{$jenis === 'Dedak basah' ? 'Karung' : 'Kg'}}
                                     </p>
                                 </div>
                             </div>

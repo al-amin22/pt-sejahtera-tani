@@ -146,10 +146,7 @@
                         <tr>
                             <td colspan="5" class="text-center py-4">
                                 <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
-                                <p class="text-muted">Belum ada data hasil produksi</p>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductionModal">
-                                    <i class="fas fa-plus me-1"></i> Tambah Data
-                                </button>
+                                <p class="text-muted">Tidak ada data hasil produksi</p>
                             </td>
                         </tr>
                         @endforelse

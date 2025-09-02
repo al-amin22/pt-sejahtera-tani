@@ -102,6 +102,7 @@ class HasilProduksiController extends Controller
     public function quickStore(Request $request)
     {
         try {
+            // Validasi input
             $validatedData = $request->validate([
                 'jenis_hasil' => 'required|string|max:255',
                 'jumlah' => 'required|numeric|min:0',
@@ -110,37 +111,39 @@ class HasilProduksiController extends Controller
                 'keterangan' => 'nullable|string|max:500',
             ]);
 
-            // Ambil semua karyawan yang hadir pada absensi tersebut
-            $karyawanHadir = AbsensiKaryawan::where('absensi_id', $validatedData['absensi_id'])
+            // Ambil salah satu karyawan yang hadir pada absensi tersebut
+            $karyawan = AbsensiKaryawan::where('absensi_id', $validatedData['absensi_id'])
                 ->where('status', 'hadir')
-                ->get();
+                ->first();
 
-            if ($karyawanHadir->isEmpty()) {
+            if (!$karyawan) {
                 return redirect()->back()
                     ->with('error', 'Tidak ada karyawan yang hadir pada tanggal tersebut.')
                     ->withInput();
             }
 
-            // Simpan data untuk setiap karyawan yang hadir
-            foreach ($karyawanHadir as $karyawan) {
-                // Cek apakah sudah ada data dengan jenis hasil yang sama untuk absensi_karyawan_id yang sama
-                $existing = HasilProduksi::where('absensi_karyawan_id', $karyawan->id)
-                    ->where('jenis_hasil', $validatedData['jenis_hasil'])
-                    ->first();
+            // Cek apakah data hasil produksi untuk jenis hasil ini sudah ada untuk karyawan tersebut
+            $existing = HasilProduksi::where('absensi_karyawan_id', $karyawan->id)
+                ->where('jenis_hasil', trim($validatedData['jenis_hasil']))
+                ->first();
 
-                if (!$existing) {
-                    HasilProduksi::create([
-                        'jenis_hasil' => $validatedData['jenis_hasil'],
-                        'jumlah' => $validatedData['jumlah'],
-                        'absensi_karyawan_id' => $karyawan->id,
-                        'satuan' => $validatedData['satuan'],
-                        'keterangan' => $validatedData['keterangan'],
-                    ]);
-                }
+            if ($existing) {
+                return redirect()->back()
+                    ->with('error', 'Data hasil produksi untuk jenis ini sudah ada.')
+                    ->withInput();
             }
 
+            // Simpan data hasil produksi
+            HasilProduksi::create([
+                'absensi_karyawan_id' => $karyawan->id,
+                'jenis_hasil' => trim($validatedData['jenis_hasil']),
+                'jumlah' => $validatedData['jumlah'],
+                'satuan' => $validatedData['satuan'],
+                'keterangan' => $validatedData['keterangan'],
+            ]);
+
             return redirect()->back()
-                ->with('success', 'Data hasil produksi berhasil disimpan untuk semua karyawan yang hadir.')
+                ->with('success', 'Data hasil produksi berhasil disimpan.')
                 ->with('scrollTo', 'production-section');
         } catch (\Exception $e) {
             return redirect()->back()

@@ -45,12 +45,12 @@
                 <div class="card-body">
                     <div class="row g-3">
                         @forelse($totalProduksiPerJenis as $jenis => $total)
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-3 col-lg-3">
                             <div class="card shadow-sm border-success h-100">
                                 <div class="card-body text-center">
                                     <h6 class="card-title mb-2">{{ $jenis }}</h6>
                                     <p class="fs-5 fw-bold text-success mb-0">
-                                        {{ number_format($total) }} Kg
+                                        {{ number_format($total, 2) }} Kg
                                     </p>
                                 </div>
                             </div>
@@ -130,7 +130,7 @@
                         @forelse($hasilProduksi as $hp)
                         <tr>
                             <td>{{ $hp->jenis_hasil }}</td>
-                            <td>{{ number_format($hp->jumlah) }}</td>
+                            <td>{{ number_format($hp->jumlah, 2) }}</td>
                             <td>{{ $hp->satuan }}</td>
                             <td>{{ $hp->keterangan ?? '-' }}</td>
                             <!-- <td>

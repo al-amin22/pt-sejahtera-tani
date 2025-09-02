@@ -7,163 +7,92 @@
             <h2><i class="fas fa-user-check me-2"></i> Daftar Absensi Karyawan</h2>
         </div>
         <div class="col-auto">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAbsensiKaryawanModal">
-                <i class="fas fa-plus me-2"></i> Tambah Absensi Karyawan
-            </button>
-        </div>
-    </div>
-
-    <!-- Alert Notifikasi -->
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
-
-    <!-- Tabel Data Absensi Karyawan -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover" id="absensiKaryawanTable">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Absensi</th>
-                            <th scope="col">Karyawan</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($absensiKaryawans as $absensiKaryawan)
-                        <tr>
-                            <th scope="row">{{ $loop->iteration }}</th>
-                            <td>{{ $absensiKaryawan->absensi->tanggal ?? '-' }}</td>
-                            <td>{{ $absensiKaryawan->karyawan->nama ?? '-' }}</td>
-                            <td>
-                                <span class="badge
-                                    @if($absensiKaryawan->status == 'hadir') bg-success
-                                    @elseif($absensiKaryawan->status == 'tidak hadir') bg-danger
-                                    @else bg-secondary
-                                    @endif">
-                                    {{ $absensiKaryawan->status }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-warning edit-btn" data-id="{{ $absensiKaryawan->id }}" data-bs-toggle="modal" data-bs-target="#editAbsensiKaryawanModal">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <form action="{{ route('staff.absensi_karyawan.destroy', $absensiKaryawan->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger delete-btn">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Tambah Absensi Karyawan -->
-<div class="modal fade" id="addAbsensiKaryawanModal" tabindex="-1" aria-labelledby="addAbsensiKaryawanModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addAbsensiKaryawanModalLabel">Tambah Data Absensi Karyawan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('staff.absensi_karyawan.store') }}" method="POST">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="absensi_id" class="form-label">Absensi</label>
-                        <select class="form-select" id="absensi_id" name="absensi_id" required>
-                            <option value="" selected disabled>Pilih Absensi</option>
-                            @foreach($absensis as $absensi)
-                            <option value="{{ $absensi->id }}">Tanggal {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="karyawan_id" class="form-label">Karyawan</label>
-                        <select class="form-select" id="karyawan_id" name="karyawan_id" required>
-                            <option value="" selected disabled>Pilih Karyawan</option>
-                            @foreach($karyawans as $karyawan)
-                            <option value="{{ $karyawan->id }}">Nama : {{ $karyawan->nama }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" name="status" required>
-                            <option value="" selected disabled>Pilih Status</option>
-                            <option value="hadir">Hadir</option>
-                            <option value="tidak hadir">Tidak Hadir</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
+            <form method="GET" class="d-flex">
+                <input type="date" class="form-control me-2" name="tanggal" value="{{ $selectedDate }}" required>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i> Tampilkan
+                </button>
             </form>
         </div>
     </div>
-</div>
-
-<!-- Modal Edit Absensi Karyawan -->
-<div class="modal fade" id="editAbsensiKaryawanModal" tabindex="-1" aria-labelledby="editAbsensiKaryawanModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editAbsensiKaryawanModalLabel">Edit Data Absensi Karyawan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="editForm" method="POST">
+    <!-- Form Absensi Karyawan -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Absensi Tanggal: {{ \Carbon\Carbon::parse($selectedDate)->format('d/m/Y') }}</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('staff.absensi_karyawan.storeOrUpdate') }}" method="POST">
                 @csrf
-                @method('PUT')
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="edit_absensi_id" class="form-label">Absensi</label>
-                        <select class="form-select" id="edit_absensi_id" name="absensi_id" required>
-                            @foreach($absensis as $absensi)
-                            <option value="{{ $absensi->id }}">Tanggal : {{ \Carbon\Carbon::parse($absensi->tanggal)->format('d/m/Y') }}</option>
+                <input type="hidden" name="tanggal" value="{{ $selectedDate }}">
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="absensiTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="25%">Nama Karyawan</th>
+                                <th width="15%">Status</th>
+                                <th width="20%">Jam Masuk</th>
+                                <th width="20%">Jam Keluar</th>
+                                <th width="15%">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($karyawans as $index => $karyawan)
+                            @php
+                            $absensiData = $absensiKaryawans[$karyawan->id] ?? null;
+                            $disabled = $absensiData ? 'disabled' : '';
+                            @endphp
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>
+                                    {{ $karyawan->nama }}
+                                    <input type="hidden" name="karyawan[{{ $karyawan->id }}][karyawan_id]" value="{{ $karyawan->id }}">
+                                </td>
+                                <td>
+                                    <select class="form-select form-select-sm status-select"
+                                        name="karyawan[{{ $karyawan->id }}][status]"
+                                        {{ $disabled }}>
+                                        <option value="">Pilih Status</option>
+                                        <option value="hadir" {{ $absensiData && $absensiData->status == 'hadir' ? 'selected' : '' }}>Hadir</option>
+                                        <option value="tidak hadir" {{ $absensiData && $absensiData->status == 'tidak hadir' ? 'selected' : '' }}>Tidak Hadir</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="time"
+                                        class="form-control form-control-sm"
+                                        name="karyawan[{{ $karyawan->id }}][jam_masuk]"
+                                        value="{{ $absensiData ? ($absensiData->jam_masuk ? \Carbon\Carbon::parse($absensiData->jam_masuk)->format('H:i') : '') : '' }}"
+                                        {{ $disabled }}>
+                                </td>
+                                <td>
+                                    <input type="time"
+                                        class="form-control form-control-sm"
+                                        name="karyawan[{{ $karyawan->id }}][jam_keluar]"
+                                        value="{{ $absensiData ? ($absensiData->jam_keluar ? \Carbon\Carbon::parse($absensiData->jam_keluar)->format('H:i') : '') : '' }}"
+                                        {{ $disabled }}>
+                                </td>
+                                <td class="text-center">
+                                    @if($absensiData)
+                                    <small class="text-success d-block mb-1 fw-bold">
+                                        ✅ Sudah diinput, tidak bisa diubah
+                                    </small>
+                                    @else
+                                    <small class="text-muted">Belum diinput</small>
+                                    @endif
+                                </td>
+
+                            </tr>
                             @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_karyawan_id" class="form-label">Karyawan</label>
-                        <select class="form-select" id="edit_karyawan_id" name="karyawan_id" required>
-                            @foreach($karyawans as $karyawan)
-                            <option value="{{ $karyawan->id }}">Nama : {{ $karyawan->nama }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_status" class="form-label">Status</label>
-                        <select class="form-select" id="edit_status" name="status" required>
-                            <option value="hadir">Hadir</option>
-                            <option value="tidak hadir">Tidak Hadir</option>
-                        </select>
-                    </div>
+                        </tbody>
+
+                    </table>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Perbarui</button>
+
+                <div class="mt-3 text-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-2"></i> Simpan Semua Perubahan
+                    </button>
                 </div>
             </form>
         </div>
@@ -174,19 +103,6 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Handler untuk tombol edit
-        $('.edit-btn').click(function() {
-            var id = $(this).data('id');
-            var url = "{{ route('staff.absensi_karyawan.data', ':id') }}".replace(':id', id);
-
-            $.get(url, function(data) {
-                $('#editForm').attr('action', "{{ route('staff.absensi_karyawan.update', ':id') }}".replace(':id', id));
-                $('#edit_absensi_id').val(data.absensi_id);
-                $('#edit_karyawan_id').val(data.karyawan_id);
-                $('#edit_status').val(data.status);
-            });
-        });
-
         // Konfirmasi hapus
         $('.delete-btn').click(function(e) {
             e.preventDefault();
@@ -194,45 +110,83 @@
                 $(this).parent().submit();
             }
         });
+
+        // Auto-disable time inputs if status is "tidak hadir"
+        $('.status-select').change(function() {
+            var row = $(this).closest('tr');
+            var timeInputs = row.find('input[type="time"]');
+
+            if ($(this).val() === 'tidak hadir') {
+                timeInputs.val('').prop('disabled', true);
+            } else {
+                timeInputs.prop('disabled', false);
+            }
+        });
+
+        // Highlight row on focus
+        $('input, select').focus(function() {
+            $(this).closest('tr').addClass('highlight-row');
+        }).blur(function() {
+            $(this).closest('tr').removeClass('highlight-row');
+        });
+
+        // Trigger change on page load
+        $('.status-select').trigger('change');
     });
 </script>
 @endpush
 
 @push('styles')
 <style>
-    /* Responsive table */
-    .table-responsive {
-        overflow-x: auto;
+    .table th {
+        background-color: #f8f9fa;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
-    /* Button spacing */
+    .table-responsive {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .form-select-sm,
+    .form-control-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: 0.25rem;
+    }
+
     .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
         margin: 0 2px;
     }
 
-    /* Badge styling */
-    .badge {
-        font-size: 0.85em;
+    .highlight-row {
+        background-color: rgba(13, 110, 253, 0.1) !important;
     }
 
-    /* Mobile optimization */
     @media (max-width: 768px) {
-        .modal-dialog {
-            margin: 0.5rem;
+        .table-responsive {
+            overflow-x: auto;
         }
 
-        .table th,
-        .table td {
-            padding: 0.5rem;
-        }
-
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
+        .container-fluid {
+            padding: 0 10px;
         }
 
         h2 {
             font-size: 1.5rem;
+        }
+
+        .d-flex {
+            flex-direction: column;
+        }
+
+        .d-flex .me-2 {
+            margin-right: 0 !important;
+            margin-bottom: 0.5rem;
         }
     }
 </style>

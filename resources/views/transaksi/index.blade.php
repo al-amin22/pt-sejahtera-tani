@@ -315,12 +315,12 @@
                                         <a href="{{ route('transaksi.show', $item->id) }}" class="btn btn-info" title="Lihat">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal-{{ $item->id }}" title="Edit">
+                                        <!-- <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal-{{ $item->id }}" title="Edit">
                                             <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $item->id }}" title="Hapus">
+                                        </button> -->
+                                        <!-- <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $item->id }}" title="Hapus">
                                             <i class="fas fa-trash"></i>
-                                        </button>
+                                        </button> -->
                                     </div>
                                 </td>
                             </tr>

@@ -94,9 +94,9 @@
                                     <button class="btn btn-info" title="Lihat Detail" data-bs-toggle="modal" data-bs-target="#detailModal-{{ $detail->id }}">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $detail->id }}">
+                                    <!-- <button class="btn btn-danger" title="Hapus" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $detail->id }}">
                                         <i class="fas fa-trash"></i>
-                                    </button>
+                                    </button> -->
                                 </div>
                             </td>
                         </tr>

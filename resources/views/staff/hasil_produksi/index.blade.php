@@ -176,6 +176,7 @@
                             <label for="jenis_hasil" class="form-label">Jenis Hasil</label>
                             <select class="form-select" id="jenis_hasil" name="jenis_hasil" required>
                                 <option value="">-- Pilih Jenis Hasil --</option>
+                                <option value="Hasil Tumbukan">Hasil Tumbukan</option>
                                 <option value="Dedak kering kasar">Dedak kering kasar</option>
                                 <option value="Dedak kering halus">Dedak kering halus</option>
                                 <option value="Dedak basah">Dedak basah</option>

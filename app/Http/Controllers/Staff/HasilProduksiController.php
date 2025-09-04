@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HasilProduksi;
 use App\Models\AbsensiKaryawan;
 use App\Models\Absensi;
+use App\Models\StokBarang;
 use Carbon\Carbon;
 
 class HasilProduksiController extends Controller
@@ -18,14 +19,22 @@ class HasilProduksiController extends Controller
         // Ambil absensi di tanggal tersebut
         $absensi = Absensi::whereDate('tanggal', $tanggal)->first();
 
-        // Siapkan default kosong
+        // Hitung stok (selalu dihitung meski absensi kosong)
+        $jumlahStokKeseluruhan = StokBarang::sum('stok');
+        $stokTerpakai = HasilProduksi::where('jenis_hasil', 'Jumlah Jernang Bulat yang Ditumbuk')->sum('jumlah');
+        $jumlahStokTersisa = $jumlahStokKeseluruhan - $stokTerpakai;
+
+        // Default kosong
         $data = [
-            'tanggal'        => $tanggal,
-            'totalProduksi'  => 0,
-            'jumlahKaryawan' => 0,
-            'karyawanHadir'  => [],
-            'hasilProduksi'  => [],
-            'absensi'        => $absensi,
+            'tanggal'                => $tanggal,
+            'totalProduksiPerJenis'  => [],
+            'jumlahKaryawan'         => 0,
+            'karyawanHadir'          => [],
+            'hasilProduksi'          => [],
+            'absensi'                => $absensi,
+            'stokTerpakai'           => $stokTerpakai,
+            'jumlahStokTersisa'      => $jumlahStokTersisa,
+            'jumlahStokKeseluruhan'  => $jumlahStokKeseluruhan,
         ];
 
         if ($absensi) {
@@ -49,20 +58,40 @@ class HasilProduksiController extends Controller
                 ->whereHas('absensiKaryawan', function ($q) use ($absensi) {
                     $q->where('absensi_id', $absensi->id);
                 })
+                ->orderByRaw("FIELD(jenis_hasil,
+        'Jumlah Jernang Bulat yang Ditumbuk',
+        'Hasil Tumbukan',
+        'Dedak kering kasar',
+        'Dedak kering halus',
+        'Dedak basah',
+        'Hasil bola-bola')")
                 ->get();
 
-            // Simpan dalam array untuk view
-            $data = [
-                'tanggal'        => $tanggal,
-                'totalProduksiPerJenis' => $totalProduksiPerJenis,
-                'jumlahKaryawan' => $karyawanHadir->count(),
-                'karyawanHadir'  => $karyawanHadir,
-                'hasilProduksi'  => $hasilProduksi,
-                'absensi'        => $absensi,
-            ];
+            $data['totalProduksiPerJenis'] = $totalProduksiPerJenis;
+            $data['jumlahKaryawan']        = $karyawanHadir->count();
+            $data['karyawanHadir']         = $karyawanHadir;
+            $data['hasilProduksi']         = $hasilProduksi;
         }
 
         return view('staff.hasil_produksi.index', $data);
+    }
+
+    public function TambahStok(Request $request)
+    {
+        try {
+            $request->validate([
+                'stok' => 'required|numeric|min:0',
+            ]);
+
+            StokBarang::create([
+                'nama_barang' => 'Jernang',
+                'stok'        => $request->stok,
+            ]);
+
+            return redirect()->back()->with('success', 'Stok Jernang Bulat berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menambahkan stok: ' . $e->getMessage());
+        }
     }
 
     public function store(Request $request)

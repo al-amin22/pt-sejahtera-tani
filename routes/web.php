@@ -152,6 +152,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     Route::delete('hasil-produksi/{id}', [StaffHasilProduksiController::class, 'destroy'])->name('hasil_produksi.destroy');
     Route::post('hasil-produksi/store-or-update', [StaffHasilProduksiController::class, 'storeOrUpdate'])->name('hasil_produksi.storeOrUpdate');
     Route::post('hasil-produksi/store-multiple', [StaffHasilProduksiController::class, 'storeMultiple'])->name('hasil_produksi.storeMultiple');
+    Route::post('hasil-produksi/tambah-stok', [StaffHasilProduksiController::class, 'tambahStok'])->name('hasil_produksi.tambahStok');
 });
 
 // ✅ Finance dashboard

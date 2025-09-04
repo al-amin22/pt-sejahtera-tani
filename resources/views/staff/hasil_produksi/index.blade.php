@@ -207,9 +207,9 @@
                 <div class="col-md-12">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="mb-0"><i class="fas fa-box-open me-2 text-secondary"></i>Detail Hasil Produksi</h6>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addProductionModal">
+                        <!-- <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addProductionModal">
                             <i class="fas fa-plus me-1"></i> Tambah Produksi
-                        </button>
+                        </button> -->
                     </div>
 
                     <div class="table-responsive">

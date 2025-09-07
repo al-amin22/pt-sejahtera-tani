@@ -210,7 +210,7 @@
                         $sisaSaldoBulanSebelumnya = $saldoBulanan[$previousMonth]['saldo'] ?? 0;
                         @endphp
                         <tr class="table-secondary">
-                            <td colspan="8" class="text-center fw-bold"> Bulan
+                            <td colspan="9" class="text-center fw-bold"> Bulan
                                 {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }} =
                                 Pemasukan: {{ number_format($saldoBulanan[$bulan]['pemasukan'] ?? 0, 0, ',', '.') }} +
                                 Sisa saldo bulan sebelumnya : {{ number_format($sisaSaldoBulanSebelumnya, 0, ',', '.') }} -
@@ -347,11 +347,12 @@
                             <!-- Saldo Bulanan -->
                             <tr>
                                 <td></td>
+                                <td></td>
                             </tr>
                             @endforeach
                     </tbody>
                     <!-- Total Keseluruhan -->
-                    <tfoot class="table-primary">
+                    <!-- <tfoot class="table-primary">
                         <tr>
                             <th colspan="2">Total Keseluruhan</th>
                             <th colspan="3">
@@ -375,7 +376,7 @@
                             </th>
                             <th></th>
                         </tr>
-                    </tfoot>
+                    </tfoot> -->
                 </table>
             </div>
 

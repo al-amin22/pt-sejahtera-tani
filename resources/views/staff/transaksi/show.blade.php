@@ -128,11 +128,11 @@
 
 <!-- Action Buttons -->
 <div class="d-flex justify-content-between mt-4">
-    <div>
+    <!-- <div>
         <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $transaksi->id }}">
             <i class="fas fa-trash me-2"></i> Hapus Transaksi
         </button>
-    </div>
+    </div> -->
     <div>
         <a href="{{ route('transaksi.index') }}" class="btn btn-secondary">
             <i class="fas fa-times me-2"></i> Tutup
@@ -162,13 +162,13 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <form action="{{ route('transaksi.destroy', $transaksi->id) }}" method="POST">
+                <!-- <form action="{{ route('transaksi.destroy', $transaksi->id) }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash me-2"></i> Hapus
                     </button>
-                </form>
+                </form> -->
             </div>
         </div>
     </div>

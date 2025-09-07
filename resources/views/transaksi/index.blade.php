@@ -210,14 +210,15 @@
                         $sisaSaldoBulanSebelumnya = $saldoBulanan[$previousMonth]['saldo'] ?? 0;
                         @endphp
                         <tr class="table-secondary">
-                            <td colspan="9" class="text-center fw-bold">
-                                Bulan {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }}
-                                = Pemasukan: {{ number_format($data['pemasukan'] ?? 0, 0, ',', '.') }}
-                                + Sisa saldo bulan sebelumnya : {{ number_format($sisaSaldoBulanSebelumnya, 0, ',', '.') }}
-                                - Pengeluaran: {{ number_format($data['pengeluaran'] ?? 0, 0, ',', '.') }}
-                                = Saldo Akhir: {{ number_format($data['saldo'] ?? 0, 0, ',', '.') }}
+                            <td colspan="9" class="text-center fw-bold"> Bulan
+                                {{ \Carbon\Carbon::parse($bulan . '-01')->translatedFormat('F Y') }} =
+                                Pemasukan: {{ number_format($saldoBulanan[$bulan]['pemasukan'] ?? 0, 0, ',', '.') }} +
+                                Sisa saldo bulan sebelumnya : {{ number_format($sisaSaldoBulanSebelumnya, 0, ',', '.') }} -
+                                Pengeluaran: {{ number_format($saldoBulanan[$bulan]['pengeluaran'] ?? 0, 0, ',', '.') }} =
+                                Saldo Akhir: {{ number_format($saldoBulanan[$bulan]['saldo'] ?? 0, 0, ',', '.') }}
                             </td>
                         </tr>
+
                         @foreach($transaksiBulan as $item)
                         @php
                         $isPemasukan = $item->total < 0;

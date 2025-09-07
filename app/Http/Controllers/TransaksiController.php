@@ -25,7 +25,7 @@ class TransaksiController extends Controller
             'details.dariRekening',
             'details.keRekening',
             'user'
-        ])->orderBy('tanggal_transaksi', 'desc'); // urutkan dari awal tahun ke akhir
+        ])->orderBy('tanggal_transaksi', 'asc'); // urutkan dari awal tahun ke akhir
 
         // Filter berdasarkan tahun
         if ($tahun) {

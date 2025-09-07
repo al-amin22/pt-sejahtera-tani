@@ -219,7 +219,7 @@
                             </td>
                         </tr>
 
-                        @foreach($transaksiBulan as $item)
+                        @foreach($transaksiBulan->sortByDesc('tanggal_transaksi') as $item)
                         @php
                         $isPemasukan = $item->total < 0;
                             $jenis=$isPemasukan ? 'Pemasukan' : 'Pengeluaran' ;
@@ -243,104 +243,108 @@
                             @endphp
 
                             <tr>
-                                <td>{{ $item->tanggal_transaksi ? \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d/m/Y') : '-' }}</td>
-                                <td>
-                                    <span class="badge {{ $badgeClass }}">
-                                        <i class="fas {{ $icon }} me-1"></i>
-                                        {{ $jenis }}
-                                    </span>
-                                </td>
-                                <td class="{{ $textClass }}">
-                                    {{ $isPemasukan ? '+' : '-' }}Rp {{ number_format($nominal, 0, ',', '.') }}
-                                </td>
-                                <!-- <td>
+                                <<td>
+                                    {{ $item->tanggal_transaksi
+                                        ? \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d/m/Y')
+                                        : '-' }}
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ $badgeClass }}">
+                                            <i class="fas {{ $icon }} me-1"></i>
+                                            {{ $jenis }}
+                                        </span>
+                                    </td>
+                                    <td class="{{ $textClass }}">
+                                        {{ $isPemasukan ? '+' : '-' }}Rp {{ number_format($nominal, 0, ',', '.') }}
+                                    </td>
+                                    <!-- <td>
                                     <span class="badge {{ $dariColor }}">{{ $dariRekening }}</span> →
                                     <span class="badge {{ $keColor }}">{{ $keRekening }}</span>
                                 </td> -->
-                                <td>
-                                    @php
-                                    $chinaToJambi = $item->details
-                                    ->where('dari_rekening_id', 1)
-                                    ->where('ke_rekening_id', 2)
-                                    ->sum('subtotal');
-                                    @endphp
+                                    <td>
+                                        @php
+                                        $chinaToJambi = $item->details
+                                        ->where('dari_rekening_id', 1)
+                                        ->where('ke_rekening_id', 2)
+                                        ->sum('subtotal');
+                                        @endphp
 
-                                    @if($chinaToJambi > 0)
-                                    <span class="text-primary fw-bold">
-                                        Rp {{ number_format($chinaToJambi, 0, ',', '.') }}
-                                    </span>
-                                    @else
-                                    -
-                                    @endif
-                                </td>
-                                <td>
-                                    @php
-                                    $jambiToAceh = $item->details
-                                    ->where('dari_rekening_id', 2)
-                                    ->where('ke_rekening_id', 3)
-                                    ->sum('subtotal');
-                                    @endphp
+                                        @if($chinaToJambi > 0)
+                                        <span class="text-primary fw-bold">
+                                            Rp {{ number_format($chinaToJambi, 0, ',', '.') }}
+                                        </span>
+                                        @else
+                                        -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                        $jambiToAceh = $item->details
+                                        ->where('dari_rekening_id', 2)
+                                        ->where('ke_rekening_id', 3)
+                                        ->sum('subtotal');
+                                        @endphp
 
-                                    @if($jambiToAceh > 0)
-                                    <span class="text-primary fw-bold">
-                                        Rp {{ number_format($jambiToAceh, 0, ',', '.') }}
-                                    </span>
-                                    @else
-                                    -
-                                    @endif
-                                </td>
-                                <td>
-                                    @php
-                                    $jambiToLainnya = $item->details
-                                    ->where('dari_rekening_id', 2)
-                                    ->where('ke_rekening_id', 4)
-                                    ->sum('subtotal');
-                                    @endphp
+                                        @if($jambiToAceh > 0)
+                                        <span class="text-primary fw-bold">
+                                            Rp {{ number_format($jambiToAceh, 0, ',', '.') }}
+                                        </span>
+                                        @else
+                                        -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                        $jambiToLainnya = $item->details
+                                        ->where('dari_rekening_id', 2)
+                                        ->where('ke_rekening_id', 4)
+                                        ->sum('subtotal');
+                                        @endphp
 
-                                    @if($jambiToLainnya > 0)
-                                    <span class="text-primary fw-bold">
-                                        Rp {{ number_format($jambiToLainnya, 0, ',', '.') }}
-                                    </span>
-                                    @else
-                                    -
-                                    @endif
-                                </td>
-                                <td>
-                                    @php
-                                    $acehToLainnya = $item->details
-                                    ->where('dari_rekening_id', 3)
-                                    ->where('ke_rekening_id', 4)
-                                    ->sum('subtotal');
-                                    @endphp
+                                        @if($jambiToLainnya > 0)
+                                        <span class="text-primary fw-bold">
+                                            Rp {{ number_format($jambiToLainnya, 0, ',', '.') }}
+                                        </span>
+                                        @else
+                                        -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                        $acehToLainnya = $item->details
+                                        ->where('dari_rekening_id', 3)
+                                        ->where('ke_rekening_id', 4)
+                                        ->sum('subtotal');
+                                        @endphp
 
-                                    @if($acehToLainnya > 0)
-                                    <span class="text-primary fw-bold">
-                                        Rp {{ number_format($acehToLainnya, 0, ',', '.') }}
-                                    </span>
-                                    @else
-                                    -
-                                    @endif
-                                <td>
-                                    <span class="badge bg-secondary">
-                                        <i class="fas fa-user me-1"></i>
-                                        {{ $item->user->name ?? 'Admin' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('transaksi.show', $item->id) }}"
-                                            class="btn btn-info d-flex align-items-center justify-content-center"
-                                            title="Lihat">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <!-- <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal-{{ $item->id }}" title="Edit">
+                                        @if($acehToLainnya > 0)
+                                        <span class="text-primary fw-bold">
+                                            Rp {{ number_format($acehToLainnya, 0, ',', '.') }}
+                                        </span>
+                                        @else
+                                        -
+                                        @endif
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-user me-1"></i>
+                                            {{ $item->user->name ?? 'Admin' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ route('transaksi.show', $item->id) }}"
+                                                class="btn btn-info d-flex align-items-center justify-content-center"
+                                                title="Lihat">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <!-- <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal-{{ $item->id }}" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </button> -->
-                                        <!-- <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $item->id }}" title="Hapus">
+                                            <!-- <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ $item->id }}" title="Hapus">
                                             <i class="fas fa-trash"></i>
                                         </button> -->
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
                             </tr>
                             @endforeach
 

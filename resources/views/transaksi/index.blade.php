@@ -197,6 +197,7 @@
                             <th>Transaksi China-Jambi</th>
                             <th>Transaksi Jambi-Aceh</th>
                             <th>Transaksi Jambi-Lainnya</th>
+                            <th>Transaksi Aceh-Lainnya</th>
                             <th>Penginput</th>
                             <th style="width: 150px;">Aksi</th>
                         </tr>
@@ -305,6 +306,21 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @php
+                                    $acehToLainnya = $item->details
+                                    ->where('dari_rekening_id', 3)
+                                    ->where('ke_rekening_id', 4)
+                                    ->sum('subtotal');
+                                    @endphp
+
+                                    @if($acehToLainnya > 0)
+                                    <span class="text-primary fw-bold">
+                                        Rp {{ number_format($acehToLainnya, 0, ',', '.') }}
+                                    </span>
+                                    @else
+                                    -
+                                    @endif
+                                <td>
                                     <span class="badge bg-secondary">
                                         <i class="fas fa-user me-1"></i>
                                         {{ $item->user->name ?? 'Admin' }}
@@ -312,7 +328,9 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('transaksi.show', $item->id) }}" class="btn btn-info" title="Lihat">
+                                        <a href="{{ route('transaksi.show', $item->id) }}"
+                                            class="btn btn-info d-flex align-items-center justify-content-center"
+                                            title="Lihat">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <!-- <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal-{{ $item->id }}" title="Edit">

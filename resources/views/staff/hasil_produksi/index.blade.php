@@ -226,8 +226,7 @@
             <!-- ringkasan bahan ketika penumbukan -->
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-hammer me-2 text-success"></i>Total Bahan Setelah Penumbukan</h6>
-                    <h4 class="mb-0">0 kg</h4>
+                    <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-hammer me-2 text-success"></i>Total Bahan Setelah Penumbukan 0 kg</h6>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-card">
@@ -285,10 +284,9 @@
             <!-- ringkasan sisa bahan setelah penumbukan -->
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-recycle me-2 text-success"></i>Sisa Bahan Setelah Penumbukan</h6>
-                    <h4 class="mb-0">0 kg</h4>
+                    <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-recycle me-2 text-success"></i>Sisa Bahan Setelah Penumbukan 0 kg</h6>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="stat-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
@@ -301,7 +299,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="stat-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
@@ -314,7 +312,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="stat-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>

@@ -223,6 +223,124 @@
                     </div>
                 </div>
             </div>
+            <!-- ringkasan bahan ketika penumbukan -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-hammer me-2 text-success"></i>Total Bahan Setelah Penumbukan</h6>
+                    <h4 class="mb-0">0 kg</h4>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Hasil Tepung Penumbukan ke-1</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-hammer text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Hasil Tepung Penumbukan ke-2</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-tools text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Hasil Tepung Penumbukan ke-3</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-info bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-database text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Hasil Tepung Penumbukan ke-4</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-secondary bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-box text-secondary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ringkasan sisa bahan setelah penumbukan -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-recycle me-2 text-success"></i>Sisa Bahan Setelah Penumbukan</h6>
+                    <h4 class="mb-0">0 kg</h4>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Sisa Tepung Setelah Penumbukan ke-1</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-hammer text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Sisa Tepung Setelah Penumbukan ke-2</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-tools text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Sisa Tepung Setelah Penumbukan ke-3</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-info bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-database text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Sisa Tepung Setelah Penumbukan ke-4</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-secondary bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-box text-secondary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Progress Bar untuk Visualisasi Stok -->
             <div class="row mb-4">

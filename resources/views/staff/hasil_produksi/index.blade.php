@@ -166,6 +166,32 @@
                     <div class="stat-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
+                                <p class="text-muted small mb-1">Total Jernang Bulat yang Sudah Dijemur</p>
+                                <h4 class="mb-0">{{ number_format($stokTerpakai, 2) }} kg</h4>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-tools text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Jernang Bulat yang Ditumbuk</p>
+                                <h4 class="mb-0">{{ number_format($stokTerpakai, 2) }} kg</h4>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-tools text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
                                 <p class="text-muted small mb-1">Sisa Stok</p>
                                 <h4 class="mb-0">{{ number_format($jumlahStokTersisa, 2) }} kg</h4>
                             </div>

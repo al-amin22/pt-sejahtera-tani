@@ -586,11 +586,16 @@
                         <label for="jenis_hasil" class="form-label">Jenis Hasil</label>
                         <select class="form-select" id="jenis_hasil" name="jenis_hasil" required>
                             <option value="">-- Pilih Jenis Hasil --</option>
-                            <option value="Jumlah Jernang Bulat yang Ditumbuk">Jumlah Jernang Bulat yang Ditumbuk</option>
-                            <option value="Hasil Tumbukan">Hasil Tumbukan</option>
-                            <option value="Dedak kering kasar">Dedak kering kasar</option>
-                            <option value="Dedak kering halus">Dedak kering halus</option>
-                            <option value="Dedak basah">Dedak basah</option>
+                            <option value="Jumlah Jernang Bulat Mentah yang Dijemur">Jumlah Jernang Bulat Mentah yang Dijemur</option>
+                            <option value="Hasil Jernang Bulat Mentah yang Dijemur">Hasil jernang Bulat Mentah Setelah Dijemur</option>
+                            <option value="Jumlah yangh Ditumbuk">Jumlah yang Ditumbuk</option>
+                            <option value="Hasil Penumbukan ke-1">Hasil Penumbukan ke-1</option>
+                            <option value="Hasil Penumbukan ke-2">Hasil Penumbukan ke-2</option>
+                            <option value="Hasil Penumbukan ke-3">Hasil Penumbukan ke-3</option>
+                            <option value="Hasil Penumbukan ke-4">Hasil Penumbukan ke-4</option>
+                            <option value="Dedak kering kasar">Hasil Dedak kering kasar</option>
+                            <option value="Dedak kering halus">Hasil Dedak kering halus</option>
+                            <option value="Dedak basah">Hasil Dedak basah</option>
                             <option value="Hasil bola-bola">Hasil bola-bola</option>
                         </select>
                     </div>

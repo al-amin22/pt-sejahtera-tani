@@ -178,6 +178,52 @@
                 </div>
             </div>
 
+            <!--rinkasan bahan sudah dijemur -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-seedling me-2 text-success"></i>Ringkasan Bahan Setelah Dijemur</h6>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Bahan Setelah Dijemur</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-leaf text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Total Bahan Setelah Dijemur Terpakai</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-tools text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Sisa Stok Setelah Dijemur</p>
+                                <h4 class="mb-0">0 kg</h4>
+                            </div>
+                            <div class="bg-info bg-opacity-10 p-2 rounded">
+                                <i class="fas fa-database text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Progress Bar untuk Visualisasi Stok -->
             <div class="row mb-4">
                 <div class="col-md-12">

@@ -140,7 +140,7 @@
                     <div class="stat-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <p class="text-muted small mb-1">Total Stok Tersedia</p>
+                                <p class="text-muted small mb-1">Total Jernang Bulat Mentah</p>
                                 <h4 class="mb-0">{{ number_format($jumlahStokKeseluruhan, 2) }} kg</h4>
                             </div>
                             <div class="bg-success bg-opacity-10 p-2 rounded">
@@ -153,7 +153,7 @@
                     <div class="stat-card">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <p class="text-muted small mb-1">Total Stok Terpakai</p>
+                                <p class="text-muted small mb-1">Total Jernang Bulat Mentah Terpakai</p>
                                 <h4 class="mb-0">{{ number_format($stokTerpakai, 2) }} kg</h4>
                             </div>
                             <div class="bg-warning bg-opacity-10 p-2 rounded">

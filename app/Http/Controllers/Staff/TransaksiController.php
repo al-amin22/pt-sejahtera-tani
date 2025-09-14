@@ -117,7 +117,7 @@ class TransaksiController extends Controller
             'detail.*.jumlah'       => 'required|numeric',
             'detail.*.satuan'       => 'nullable|string',
             'detail.*.harga'        => 'required|numeric',
-            'detail.*.referensi'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'detail.*.referensi'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:9999999999',
         ]);
 
         try {

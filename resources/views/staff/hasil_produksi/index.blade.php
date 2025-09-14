@@ -588,13 +588,16 @@
                             <option value="">-- Pilih Jenis Hasil --</option>
                             <option value="Jumlah Jernang Bulat Mentah yang Dijemur">Jumlah Jernang Bulat Mentah yang Dijemur</option>
                             <option value="Hasil Jernang Bulat Mentah yang Dijemur">Hasil jernang Bulat Mentah Setelah Dijemur</option>
-                            <option value="Jumlah yangh Ditumbuk">Jumlah yang Ditumbuk</option>
+                            <option value="Jumlah yangh Ditumbuk">Jumlah yang Ditumbuk ke-1</option>
                             <option value="Hasil Penumbukan ke-1">Hasil Penumbukan ke-1</option>
                             <option value="Sisa Penumbukan ke-1">Sisa Penumbukan ke-1</option>
+                            <option value="Jumlah yang Ditumbuk ke-2">Jumlah yang Ditumbuk ke-2</option>
                             <option value="Hasil Penumbukan ke-2">Hasil Penumbukan ke-2</option>
                             <option value="Sisa Penumbukan ke-2">Sisa Penumbukan ke-2</option>
+                            <option value="Jumlah yang Ditumbuk ke-3">Jumlah yang Ditumbuk ke-3</option>
                             <option value="Hasil Penumbukan ke-3">Hasil Penumbukan ke-3</option>
                             <option value="Sisa Penumbukan ke-3">Sisa Penumbukan ke-3</option>
+                            <option value="Jumlah yang Ditumbuk ke-4">Jumlah yang Ditumbuk ke-4</option>
                             <option value="Hasil Penumbukan ke-4">Hasil Penumbukan ke-4</option>
                             <option value="Sisa Penumbukan ke-4">Sisa Penumbukan ke-4</option>
                             <option value="Dedak kering kasar">Hasil Dedak kering kasar</option>

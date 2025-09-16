@@ -600,6 +600,8 @@
                             <option value="Jumlah yang Ditumbuk ke-4">Jumlah yang Ditumbuk ke-4</option>
                             <option value="Hasil Penumbukan ke-4">Hasil Penumbukan ke-4</option>
                             <option value="Sisa Penumbukan ke-4">Sisa Penumbukan ke-4</option>
+                            <option value="Pencucian">Pencucian</option>
+                            <option value="Ayakan">Jumlah Ayakan</option>
                             <option value="Dedak kering kasar">Hasil Dedak kering kasar</option>
                             <option value="Dedak kering halus">Hasil Dedak kering halus</option>
                             <option value="Dedak basah">Hasil Dedak basah</option>

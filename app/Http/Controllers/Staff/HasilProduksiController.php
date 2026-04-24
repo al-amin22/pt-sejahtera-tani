@@ -76,7 +76,14 @@ class HasilProduksiController extends Controller
         return view('staff.hasil_produksi.index', $data);
     }
 
-    public function TambahStok(Request $request)
+    public function show($id)
+    {
+        $hasilProduksi = HasilProduksi::with(['absensiKaryawan.karyawan', 'absensi'])->findOrFail($id);
+
+        return view('staff.hasil_produksi.show', compact('hasilProduksi'));
+    }
+
+    public function tambahStok(Request $request)
     {
         try {
             $request->validate([
@@ -179,5 +186,77 @@ class HasilProduksiController extends Controller
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+
+    public function storeOrUpdate(Request $request)
+    {
+        $validatedData = $request->validate([
+            'jenis_hasil' => 'required|string|max:255',
+            'jumlah' => 'required|numeric|min:0',
+            'absensi_karyawan_id' => 'required|exists:absensi_karyawan,id',
+            'satuan' => 'required|string|max:50',
+            'keterangan' => 'nullable|string|max:500',
+        ]);
+
+        $existing = HasilProduksi::where('absensi_karyawan_id', $validatedData['absensi_karyawan_id'])
+            ->where('jenis_hasil', $validatedData['jenis_hasil'])
+            ->first();
+
+        if ($existing) {
+            $existing->update($validatedData);
+            return redirect()->back()->with('success', 'Data hasil produksi berhasil diperbarui.');
+        }
+
+        HasilProduksi::create($validatedData);
+
+        return redirect()->back()->with('success', 'Data hasil produksi berhasil disimpan.');
+    }
+
+    public function storeMultiple(Request $request)
+    {
+        $items = $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.jenis_hasil' => 'required|string|max:255',
+            'items.*.jumlah' => 'required|numeric|min:0',
+            'items.*.absensi_karyawan_id' => 'required|exists:absensi_karyawan,id',
+            'items.*.satuan' => 'required|string|max:50',
+            'items.*.keterangan' => 'nullable|string|max:500',
+        ])['items'];
+
+        foreach ($items as $item) {
+            HasilProduksi::updateOrCreate(
+                [
+                    'absensi_karyawan_id' => $item['absensi_karyawan_id'],
+                    'jenis_hasil' => $item['jenis_hasil'],
+                ],
+                $item
+            );
+        }
+
+        return redirect()->back()->with('success', 'Data hasil produksi massal berhasil disimpan.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = $request->validate([
+            'jenis_hasil' => 'required|string|max:255',
+            'jumlah' => 'required|numeric|min:0',
+            'absensi_karyawan_id' => 'required|exists:absensi_karyawan,id',
+            'satuan' => 'required|string|max:50',
+            'keterangan' => 'nullable|string|max:500',
+        ]);
+
+        $hasilProduksi = HasilProduksi::findOrFail($id);
+        $hasilProduksi->update($data);
+
+        return redirect()->back()->with('success', 'Data hasil produksi berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $hasilProduksi = HasilProduksi::findOrFail($id);
+        $hasilProduksi->delete();
+
+        return redirect()->back()->with('success', 'Data hasil produksi berhasil dihapus.');
     }
 }

@@ -144,7 +144,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
     //hasil produksi
     Route::get('hasil-produksi', [StaffHasilProduksiController::class, 'index'])->name('hasil_produksi.index');
     Route::post('hasil-produksi/quick-store', [StaffHasilProduksiController::class, 'quickStore'])->name('hasil_produksi.quickStore');
-    Route::get('hasil-produksi/{tanggal}', [StaffHasilProduksiController::class, 'show'])->name('hasil_produksi.show');
+    Route::get('hasil-produksi/tanggal/{tanggal}', [StaffHasilProduksiController::class, 'index'])->name('hasil_produksi.byDate');
     Route::post('hasil-produksi', [StaffHasilProduksiController::class, 'store'])->name('hasil_produksi.store');
     Route::get('hasil-produksi/{id}', [StaffHasilProduksiController::class, 'show'])->name('hasil_produksi.show');
     Route::put('hasil-produksi/{id}', [StaffHasilProduksiController::class, 'update'])->name('hasil_produksi.update');

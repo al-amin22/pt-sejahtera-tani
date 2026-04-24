@@ -73,7 +73,7 @@
                 <h4>Sistem Akuntansi</h4>
             </div>
             <div class="list-group list-group-flush">
-                <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                <a href="{{ route('staff.dashboard') }}" class="list-group-item list-group-item-action bg-dark text-white">
                     <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                 </a>
                 <a href="{{ route('staff.transaksi.index') }}" class="list-group-item list-group-item-action bg-dark text-white">
@@ -108,7 +108,7 @@
                         <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user-circle me-1"></i> {{ Auth::user()->nama }}
+                                    <i class="fas fa-user-circle me-1"></i> {{ Auth::user()->name }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profil</a></li>

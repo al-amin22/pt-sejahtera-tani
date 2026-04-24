@@ -117,7 +117,7 @@
                         <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user-circle me-1"></i> {{ Auth::user()->nama }}
+                                    <i class="fas fa-user-circle me-1"></i> {{ Auth::user()->name }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profil</a></li>

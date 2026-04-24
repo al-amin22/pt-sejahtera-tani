@@ -17,9 +17,8 @@ use App\Http\Controllers\Staff\TransaksiController as StaffTransaksiController;
 use App\Http\Controllers\Staff\AbsensiController as StaffAbsensiController;
 use App\Http\Controllers\Staff\KaryawanController as StaffKaryawanController;
 use App\Http\Controllers\Staff\HasilProduksiController as StaffHasilProduksiController;
-//ssh -p 65002 u472680438@46.202.138.212
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
 
 

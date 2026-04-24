@@ -9,49 +9,45 @@ class CoaController extends Controller
 {
     public function index()
     {
-        $coa = Coa::all();
+        $coa = Coa::orderBy('kode')->get();
+
         return view('coa.index', compact('coa'));
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'kode' => 'required|unique:coa,kode',
-                'nama' => 'required',
-                'jenis' => 'required',
-                'saldo_awal' => 'required|numeric',
-            ]);
+        $validated = $request->validate([
+            'kode' => ['required', 'string', 'max:50', 'unique:coa,kode'],
+            'nama' => ['required', 'string', 'max:255'],
+            'jenis' => ['required', 'string', 'max:100'],
+            'saldo_awal' => ['required', 'numeric'],
+        ]);
 
-            Coa::create($request->all());
+        Coa::create($validated);
 
-            return redirect()->back()->with('success', 'CoA berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan CoA: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'CoA berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $coa = Coa::findOrFail($id);
-            $coa->update($request->all());
+        $coa = Coa::findOrFail($id);
 
-            return redirect()->back()->with('success', 'CoA berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui CoA: ' . $e->getMessage());
-        }
+        $validated = $request->validate([
+            'kode' => ['required', 'string', 'max:50', 'unique:coa,kode,' . $coa->id],
+            'nama' => ['required', 'string', 'max:255'],
+            'jenis' => ['required', 'string', 'max:100'],
+            'saldo_awal' => ['required', 'numeric'],
+        ]);
+
+        $coa->update($validated);
+
+        return redirect()->back()->with('success', 'CoA berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        try {
-            $coa = Coa::findOrFail($id);
-            $coa->delete();
+        Coa::findOrFail($id)->delete();
 
-            return redirect()->back()->with('success', 'CoA berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus CoA: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'CoA berhasil dihapus.');
     }
 }

@@ -9,60 +9,46 @@ class RekeningController extends Controller
 {
     public function index()
     {
-        $rekening = Rekening::all();
+        $rekening = Rekening::orderBy('nama')->get();
+
         return view('rekening.index', compact('rekening'));
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'nama' => 'required|string|max:255',
-                'keterangan' => 'nullable|string',
-            ]);
+        $validated = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'keterangan' => ['nullable', 'string', 'max:255'],
+        ]);
 
-            Rekening::create($request->all());
+        Rekening::create($validated);
 
-            return redirect()->back()->with('success', 'Rekening berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with(['error' => 'Terjadi kesalahan saat menambahkan rekening.'], 500);
-        }
+        return redirect()->back()->with('success', 'Rekening berhasil ditambahkan.');
     }
 
     public function show($id)
     {
-        try {
-            $rekening = Rekening::findOrFail($id);
-            return redirect()->back()->with($rekening);
-        } catch (\Exception $e) {
-            return redirect()->back()->with(['error' => 'Rekening tidak ditemukan.'], 404);
-        }
+        return response()->json(Rekening::findOrFail($id));
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $rekening = Rekening::findOrFail($id);
-            $request->validate([
-                'nama' => 'required|string|max:255',
-                'keterangan' => 'nullable|string',
-            ]);
+        $rekening = Rekening::findOrFail($id);
 
-            $rekening->update($request->all());
-            return redirect()->back()->with('success', 'Rekening berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with(['error' => 'Terjadi kesalahan saat memperbarui rekening.'], 500);
-        }
+        $validated = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'keterangan' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $rekening->update($validated);
+
+        return redirect()->back()->with('success', 'Rekening berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        try {
-            $rekening = Rekening::findOrFail($id);
-            $rekening->delete();
-            return redirect()->back()->with('success', 'Rekening berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with(['error' => 'Terjadi kesalahan saat menghapus rekening.'], 500);
-        }
+        Rekening::findOrFail($id)->delete();
+
+        return redirect()->back()->with('success', 'Rekening berhasil dihapus.');
     }
 }

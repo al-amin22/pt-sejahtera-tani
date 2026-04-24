@@ -7,9 +7,14 @@
             <h4 class="mb-0">Manajemen Pengguna</h4>
             <small class="text-muted">Kelola akun admin, staff, dan finance</small>
         </div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-            <i class="fas fa-plus me-1"></i> Tambah User
-        </button>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-secondary" href="{{ route('users.exportCsv') }}">
+                <i class="fas fa-file-csv me-1"></i> Export CSV
+            </a>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+                <i class="fas fa-plus me-1"></i> Tambah User
+            </button>
+        </div>
     </div>
 
     @if(session('success'))
@@ -37,6 +42,9 @@
                             <td>{{ $item->email }}</td>
                             <td><span class="badge bg-info text-dark">{{ ucfirst($item->role) }}</span></td>
                             <td>
+                                <a class="btn btn-sm btn-outline-secondary" href="{{ route('users.show', $item->id) }}">
+                                    Detail
+                                </a>
                                 <button
                                     class="btn btn-sm btn-outline-primary btn-edit"
                                     data-id="{{ $item->id }}"

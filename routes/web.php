@@ -6,6 +6,12 @@ use App\Http\Controllers\AbsensiKaryawanController;
 use App\Http\Controllers\DetailTransaksiController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\MataUangController;
+use App\Http\Controllers\ArusKasController;
+use App\Http\Controllers\CoaController;
+use App\Http\Controllers\JurnalController;
+use App\Http\Controllers\DetailJurnalController;
+use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\PemasokController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\RekeningController;
@@ -29,6 +35,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard/monthly-data', [DashboardController::class, 'monthlyData'])->name('dashboard.monthlyData');
     // Users
     Route::get('users', [UsersController::class, 'index'])->name('users.index');
+    Route::get('users/export-csv', [UsersController::class, 'exportCsv'])->name('users.exportCsv');
     Route::post('users', [UsersController::class, 'store'])->name('users.store');
     Route::get('users/{id}', [UsersController::class, 'show'])->name('users.show');
     Route::put('users/{id}', [UsersController::class, 'update'])->name('users.update');
@@ -55,6 +62,42 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::put('absensi-karyawan/{id}', [AbsensiKaryawanController::class, 'update'])->name('absensi_karyawan.update');
     Route::delete('absensi-karyawan/{id}', [AbsensiKaryawanController::class, 'destroy'])->name('absensi_karyawan.destroy');
     Route::get('absensi-karyawan/data', [AbsensiKaryawanController::class, 'data'])->name('absensi_karyawan.data');
+
+    // Master data
+    Route::get('produk', [ProdukController::class, 'index'])->name('produk.index');
+    Route::post('produk', [ProdukController::class, 'store'])->name('produk.store');
+    Route::get('produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
+    Route::put('produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::delete('produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+
+    Route::get('pemasok', [PemasokController::class, 'index'])->name('pemasok.index');
+    Route::post('pemasok', [PemasokController::class, 'store'])->name('pemasok.store');
+    Route::get('pemasok/{id}', [PemasokController::class, 'show'])->name('pemasok.show');
+    Route::put('pemasok/{id}', [PemasokController::class, 'update'])->name('pemasok.update');
+    Route::delete('pemasok/{id}', [PemasokController::class, 'destroy'])->name('pemasok.destroy');
+
+    Route::get('coa', [CoaController::class, 'index'])->name('coa.index');
+    Route::post('coa', [CoaController::class, 'store'])->name('coa.store');
+    Route::get('coa/{id}', [CoaController::class, 'show'])->name('coa.show');
+    Route::put('coa/{id}', [CoaController::class, 'update'])->name('coa.update');
+    Route::delete('coa/{id}', [CoaController::class, 'destroy'])->name('coa.destroy');
+
+    Route::get('jurnal', [JurnalController::class, 'index'])->name('jurnal.index');
+    Route::post('jurnal', [JurnalController::class, 'store'])->name('jurnal.store');
+    Route::get('jurnal/{id}', [JurnalController::class, 'show'])->name('jurnal.show');
+    Route::put('jurnal/{id}', [JurnalController::class, 'update'])->name('jurnal.update');
+    Route::delete('jurnal/{id}', [JurnalController::class, 'destroy'])->name('jurnal.destroy');
+
+    Route::get('detail-jurnal', [DetailJurnalController::class, 'index'])->name('detail_jurnal.index');
+    Route::post('detail-jurnal', [DetailJurnalController::class, 'store'])->name('detail_jurnal.store');
+    Route::get('detail-jurnal/{id}', [DetailJurnalController::class, 'show'])->name('detail_jurnal.show');
+    Route::put('detail-jurnal/{id}', [DetailJurnalController::class, 'update'])->name('detail_jurnal.update');
+    Route::delete('detail-jurnal/{id}', [DetailJurnalController::class, 'destroy'])->name('detail_jurnal.destroy');
+
+    Route::get('arus-kas', [ArusKasController::class, 'index'])->name('arus_kas.index');
+    Route::post('arus-kas', [ArusKasController::class, 'store'])->name('arus_kas.store');
+    Route::put('arus-kas/{id}', [ArusKasController::class, 'update'])->name('arus_kas.update');
+    Route::delete('arus-kas/{id}', [ArusKasController::class, 'destroy'])->name('arus_kas.destroy');
 
     // Transaksi
     Route::get('transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');

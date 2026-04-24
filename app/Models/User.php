@@ -7,10 +7,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 /**
+ * @property int $id
  * @property string $name
+ * @property string $email
  * @property string $role
+ * @property string $password
  */
-
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -27,6 +29,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+
     // Cek role
     public function isAdmin()
     {
@@ -41,25 +47,5 @@ class User extends Authenticatable
     public function isFinance()
     {
         return $this->role === 'finance';
-    }
-
-    public function getNamaAttribute()
-    {
-        return $this->name;
-    }
-
-    public function setNamaAttribute($value)
-    {
-        $this->name = $value;
-    }
-
-    public function getPeranAttribute()
-    {
-        return $this->role;
-    }
-
-    public function setPeranAttribute($value)
-    {
-        $this->role = $value;
     }
 }

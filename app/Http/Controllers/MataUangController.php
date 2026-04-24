@@ -9,48 +9,43 @@ class MataUangController extends Controller
 {
     public function index()
     {
-        $mata_uang = MataUang::all();
+        $mata_uang = MataUang::orderBy('kode')->get();
+
         return view('mata_uang.index', compact('mata_uang'));
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'kode' => 'required|unique:mata_uang,kode',
-                'nama' => 'required',
-                'simbol' => 'required'
-            ]);
+        $validated = $request->validate([
+            'kode' => ['required', 'string', 'max:20', 'unique:mata_uang,kode'],
+            'nama' => ['required', 'string', 'max:255'],
+            'kurs' => ['required', 'numeric', 'min:0'],
+        ]);
 
-            MataUang::create($request->all());
+        MataUang::create($validated);
 
-            return redirect()->back()->with('success', 'Mata uang berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan mata uang: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Mata uang berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $mata_uang = MataUang::findOrFail($id);
-            $mata_uang->update($request->all());
+        $mata_uang = MataUang::findOrFail($id);
 
-            return redirect()->back()->with('success', 'Mata uang berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui mata uang: ' . $e->getMessage());
-        }
+        $validated = $request->validate([
+            'kode' => ['required', 'string', 'max:20', 'unique:mata_uang,kode,' . $mata_uang->id],
+            'nama' => ['required', 'string', 'max:255'],
+            'kurs' => ['required', 'numeric', 'min:0'],
+        ]);
+
+        $mata_uang->update($validated);
+
+        return redirect()->back()->with('success', 'Mata uang berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        try {
-            $mata_uang = MataUang::findOrFail($id);
-            $mata_uang->delete();
+        MataUang::findOrFail($id)->delete();
 
-            return redirect()->back()->with('success', 'Mata uang berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus mata uang: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Mata uang berhasil dihapus.');
     }
 }

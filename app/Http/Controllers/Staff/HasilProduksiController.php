@@ -2,75 +2,58 @@
 
 namespace App\Http\Controllers\Staff;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\HasilProduksi;
 use App\Models\AbsensiKaryawan;
 use App\Models\Absensi;
 use App\Models\StokBarang;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class HasilProduksiController extends Controller
 {
     public function index(Request $request)
     {
-        $tanggal = $request->get('tanggal', date('Y-m-d'));
+        $tanggal = $request->get('tanggal', now()->format('Y-m-d'));
 
-        // Ambil absensi di tanggal tersebut
         $absensi = Absensi::whereDate('tanggal', $tanggal)->first();
+        $stokKeseluruhan = (float) StokBarang::sum('stok');
+        $stokTerpakai = (float) HasilProduksi::sum('jumlah');
+        $stokTersisa = max($stokKeseluruhan - $stokTerpakai, 0);
 
-        // Hitung stok (selalu dihitung meski absensi kosong)
-        $jumlahStokKeseluruhan = StokBarang::sum('stok');
-        $stokTerpakai = HasilProduksi::where('jenis_hasil', 'Jumlah Jernang Bulat yang Ditumbuk')->sum('jumlah');
-        $jumlahStokTersisa = $jumlahStokKeseluruhan - $stokTerpakai;
-
-        // Default kosong
         $data = [
-            'tanggal'                => $tanggal,
-            'totalProduksiPerJenis'  => [],
-            'jumlahKaryawan'         => 0,
-            'karyawanHadir'          => [],
-            'hasilProduksi'          => [],
-            'absensi'                => $absensi,
-            'stokTerpakai'           => $stokTerpakai,
-            'jumlahStokTersisa'      => $jumlahStokTersisa,
-            'jumlahStokKeseluruhan'  => $jumlahStokKeseluruhan,
+            'tanggal' => $tanggal,
+            'totalProduksiPerJenis' => collect(),
+            'jumlahKaryawan' => 0,
+            'karyawanHadir' => collect(),
+            'hasilProduksi' => collect(),
+            'absensi' => $absensi,
+            'stokTerpakai' => $stokTerpakai,
+            'jumlahStokTersisa' => $stokTersisa,
+            'jumlahStokKeseluruhan' => $stokKeseluruhan,
         ];
 
         if ($absensi) {
-            // Total produksi
-            $totalProduksiPerJenis = HasilProduksi::select('jenis_hasil')
-                ->selectRaw('SUM(jumlah) as total')
-                ->whereHas('absensiKaryawan', function ($q) use ($absensi) {
-                    $q->where('absensi_id', $absensi->id);
-                })
-                ->groupBy('jenis_hasil')
-                ->pluck('total', 'jenis_hasil');
-
-            // Karyawan hadir
             $karyawanHadir = AbsensiKaryawan::with('karyawan')
                 ->where('absensi_id', $absensi->id)
                 ->where('status', 'hadir')
                 ->get();
 
-            // Hasil produksi detail
-            $hasilProduksi = HasilProduksi::with(['absensiKaryawan.karyawan'])
-                ->whereHas('absensiKaryawan', function ($q) use ($absensi) {
-                    $q->where('absensi_id', $absensi->id);
+            $hasilProduksi = HasilProduksi::with('absensiKaryawan.karyawan')
+                ->whereHas('absensiKaryawan', function ($query) use ($absensi) {
+                    $query->where('absensi_id', $absensi->id);
                 })
-                ->orderByRaw("FIELD(jenis_hasil,
-        'Jumlah Jernang Bulat yang Ditumbuk',
-        'Hasil Tumbukan',
-        'Dedak kering kasar',
-        'Dedak kering halus',
-        'Dedak basah',
-        'Hasil bola-bola')")
+                ->orderBy('jenis_hasil')
                 ->get();
 
+            $totalProduksiPerJenis = $hasilProduksi
+                ->groupBy('jenis_hasil')
+                ->map(fn ($items) => $items->sum('jumlah'));
+
             $data['totalProduksiPerJenis'] = $totalProduksiPerJenis;
-            $data['jumlahKaryawan']        = $karyawanHadir->count();
-            $data['karyawanHadir']         = $karyawanHadir;
-            $data['hasilProduksi']         = $hasilProduksi;
+            $data['jumlahKaryawan'] = $karyawanHadir->count();
+            $data['karyawanHadir'] = $karyawanHadir;
+            $data['hasilProduksi'] = $hasilProduksi;
         }
 
         return view('staff.hasil_produksi.index', $data);
@@ -85,129 +68,83 @@ class HasilProduksiController extends Controller
 
     public function tambahStok(Request $request)
     {
-        try {
-            $request->validate([
-                'stok' => 'required|numeric|min:0',
-            ]);
+        $validated = $request->validate([
+            'stok' => ['required', 'numeric', 'min:0'],
+        ]);
 
-            StokBarang::create([
-                'nama_barang' => 'Jernang',
-                'stok'        => $request->stok,
-            ]);
+        StokBarang::create([
+            'nama_barang' => 'Jernang',
+            'stok' => $validated['stok'],
+        ]);
 
-            return redirect()->back()->with('success', 'Stok Jernang Bulat berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan stok: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Stok berhasil ditambahkan.');
     }
 
     public function store(Request $request)
     {
-        try {
-            $validatedData = $request->validate([
-                'jenis_hasil' => 'required|string|max:255',
-                'jumlah' => 'required|numeric|min:0',
-                'absensi_karyawan_id' => 'required|exists:absensi_karyawan,id',
-                'satuan' => 'required|string|max:50',
-                'keterangan' => 'nullable|string|max:500',
-            ]);
+        $validated = $request->validate([
+            'jenis_hasil' => ['required', 'string', 'max:255'],
+            'jumlah' => ['required', 'numeric', 'min:0'],
+            'absensi_karyawan_id' => ['required', 'exists:absensi_karyawan,id'],
+            'satuan' => ['required', 'string', 'max:50'],
+            'keterangan' => ['nullable', 'string', 'max:500'],
+        ]);
 
-            // Cek apakah sudah ada data dengan jenis hasil yang sama untuk absensi_karyawan_id yang sama
-            $existing = HasilProduksi::where('absensi_karyawan_id', $validatedData['absensi_karyawan_id'])
-                ->where('jenis_hasil', $validatedData['jenis_hasil'])
-                ->first();
+        HasilProduksi::create($validated);
 
-            if ($existing) {
-                return redirect()->back()
-                    ->with('error', 'Data dengan jenis hasil tersebut sudah ada untuk karyawan ini. Gunakan edit untuk mengubah.')
-                    ->withInput();
-            }
-
-            HasilProduksi::create($validatedData);
-
-            return redirect()->back()
-                ->with('success', 'Data hasil produksi berhasil disimpan.')
-                ->with('scrollTo', 'production-section');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
-                ->withInput();
-        }
+        return redirect()->back()->with('success', 'Data hasil produksi berhasil disimpan.');
     }
 
     public function quickStore(Request $request)
     {
-        try {
-            // Validasi input
-            $validatedData = $request->validate([
-                'jenis_hasil' => 'required|string|max:255',
-                'jumlah' => 'required|numeric|min:0',
-                'absensi_id' => 'required|exists:absensi,id',
-                'satuan' => 'required|string|max:50',
-                'keterangan' => 'nullable|string|max:500',
-            ]);
+        $validated = $request->validate([
+            'jenis_hasil' => ['required', 'string', 'max:255'],
+            'jumlah' => ['required', 'numeric', 'min:0'],
+            'absensi_id' => ['required', 'exists:absensi,id'],
+            'satuan' => ['required', 'string', 'max:50'],
+            'keterangan' => ['nullable', 'string', 'max:500'],
+        ]);
 
-            // Ambil salah satu karyawan yang hadir pada absensi tersebut
-            $karyawan = AbsensiKaryawan::where('absensi_id', $validatedData['absensi_id'])
-                ->where('status', 'hadir')
-                ->first();
+        $karyawan = AbsensiKaryawan::where('absensi_id', $validated['absensi_id'])
+            ->where('status', 'hadir')
+            ->orderBy('id')
+            ->first();
 
-            if (!$karyawan) {
-                return redirect()->back()
-                    ->with('error', 'Tidak ada karyawan yang hadir pada tanggal tersebut.')
-                    ->withInput();
-            }
-
-            // Cek apakah data hasil produksi untuk jenis hasil ini sudah ada untuk karyawan tersebut
-            $existing = HasilProduksi::where('absensi_karyawan_id', $karyawan->id)
-                ->where('jenis_hasil', trim($validatedData['jenis_hasil']))
-                ->first();
-
-            if ($existing) {
-                return redirect()->back()
-                    ->with('error', 'Data hasil produksi untuk jenis ini sudah ada.')
-                    ->withInput();
-            }
-
-            // Simpan data hasil produksi
-            HasilProduksi::create([
-                'absensi_karyawan_id' => $karyawan->id,
-                'jenis_hasil' => trim($validatedData['jenis_hasil']),
-                'jumlah' => $validatedData['jumlah'],
-                'satuan' => $validatedData['satuan'],
-                'keterangan' => $validatedData['keterangan'],
-            ]);
-
-            return redirect()->back()
-                ->with('success', 'Data hasil produksi berhasil disimpan.')
-                ->with('scrollTo', 'production-section');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
-                ->withInput();
+        if (! $karyawan) {
+            return redirect()->back()->with('error', 'Tidak ada karyawan hadir pada tanggal tersebut.');
         }
+
+        HasilProduksi::create([
+            'absensi_karyawan_id' => $karyawan->id,
+            'jenis_hasil' => $validated['jenis_hasil'],
+            'jumlah' => $validated['jumlah'],
+            'satuan' => $validated['satuan'],
+            'keterangan' => $validated['keterangan'] ?? null,
+        ]);
+
+        return redirect()->back()->with('success', 'Data hasil produksi berhasil disimpan.');
     }
 
     public function storeOrUpdate(Request $request)
     {
-        $validatedData = $request->validate([
-            'jenis_hasil' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
-            'absensi_karyawan_id' => 'required|exists:absensi_karyawan,id',
-            'satuan' => 'required|string|max:50',
-            'keterangan' => 'nullable|string|max:500',
+        $validated = $request->validate([
+            'jenis_hasil' => ['required', 'string', 'max:255'],
+            'jumlah' => ['required', 'numeric', 'min:0'],
+            'absensi_karyawan_id' => ['required', 'exists:absensi_karyawan,id'],
+            'satuan' => ['required', 'string', 'max:50'],
+            'keterangan' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $existing = HasilProduksi::where('absensi_karyawan_id', $validatedData['absensi_karyawan_id'])
-            ->where('jenis_hasil', $validatedData['jenis_hasil'])
+        $existing = HasilProduksi::where('absensi_karyawan_id', $validated['absensi_karyawan_id'])
+            ->where('jenis_hasil', $validated['jenis_hasil'])
             ->first();
 
         if ($existing) {
-            $existing->update($validatedData);
+            $existing->update($validated);
             return redirect()->back()->with('success', 'Data hasil produksi berhasil diperbarui.');
         }
 
-        HasilProduksi::create($validatedData);
+        HasilProduksi::create($validated);
 
         return redirect()->back()->with('success', 'Data hasil produksi berhasil disimpan.');
     }
@@ -238,24 +175,22 @@ class HasilProduksiController extends Controller
 
     public function update(Request $request, $id)
     {
-        $data = $request->validate([
-            'jenis_hasil' => 'required|string|max:255',
-            'jumlah' => 'required|numeric|min:0',
-            'absensi_karyawan_id' => 'required|exists:absensi_karyawan,id',
-            'satuan' => 'required|string|max:50',
-            'keterangan' => 'nullable|string|max:500',
+        $validated = $request->validate([
+            'jenis_hasil' => ['required', 'string', 'max:255'],
+            'jumlah' => ['required', 'numeric', 'min:0'],
+            'absensi_karyawan_id' => ['required', 'exists:absensi_karyawan,id'],
+            'satuan' => ['required', 'string', 'max:50'],
+            'keterangan' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $hasilProduksi = HasilProduksi::findOrFail($id);
-        $hasilProduksi->update($data);
+        HasilProduksi::findOrFail($id)->update($validated);
 
         return redirect()->back()->with('success', 'Data hasil produksi berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        $hasilProduksi = HasilProduksi::findOrFail($id);
-        $hasilProduksi->delete();
+        HasilProduksi::findOrFail($id)->delete();
 
         return redirect()->back()->with('success', 'Data hasil produksi berhasil dihapus.');
     }

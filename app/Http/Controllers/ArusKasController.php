@@ -3,55 +3,53 @@
 namespace App\Http\Controllers;
 
 use App\Models\ArusKas;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 
 class ArusKasController extends Controller
 {
     public function index()
     {
-        $arus_kas = ArusKas::with('transaksi')->get();
-        return view('arus_kas.index', compact('arus_kas'));
+        $arus_kas = ArusKas::with('transaksi')->orderByDesc('tanggal')->get();
+        $transaksis = Transaksi::orderByDesc('tanggal_transaksi')->get();
+
+        return view('arus_kas.index', compact('arus_kas', 'transaksis'));
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'tanggal' => 'required|date',
-                'jenis' => 'required',
-                'jumlah' => 'required|numeric',
-                'transaksi_id' => 'required|integer'
-            ]);
+        $validated = $request->validate([
+            'tanggal' => ['required', 'date'],
+            'jenis' => ['required', 'in:operasi,investasi,pendanaan'],
+            'jumlah' => ['required', 'numeric', 'min:0'],
+            'transaksi_id' => ['required', 'exists:transaksi,id'],
+        ]);
 
-            ArusKas::create($request->all());
+        ArusKas::create($validated);
 
-            return redirect()->back()->with('success', 'Arus kas berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan arus kas: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Arus kas berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $arus = ArusKas::findOrFail($id);
-            $arus->update($request->all());
+        $arus = ArusKas::findOrFail($id);
 
-            return redirect()->back()->with('success', 'Arus kas berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui arus kas: ' . $e->getMessage());
-        }
+        $validated = $request->validate([
+            'tanggal' => ['required', 'date'],
+            'jenis' => ['required', 'in:operasi,investasi,pendanaan'],
+            'jumlah' => ['required', 'numeric', 'min:0'],
+            'transaksi_id' => ['required', 'exists:transaksi,id'],
+        ]);
+
+        $arus->update($validated);
+
+        return redirect()->back()->with('success', 'Arus kas berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        try {
-            $arus = ArusKas::findOrFail($id);
-            $arus->delete();
+        ArusKas::findOrFail($id)->delete();
 
-            return redirect()->back()->with('success', 'Arus kas berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus arus kas: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Arus kas berhasil dihapus.');
     }
 }

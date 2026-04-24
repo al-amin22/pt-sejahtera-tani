@@ -3,55 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jurnal;
+use App\Models\Coa;
+use App\Models\Transaksi;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class JurnalController extends Controller
 {
     public function index()
     {
-        $jurnal = Jurnal::with(['transaksi', 'user'])->get();
-        return view('jurnal.index', compact('jurnal'));
+        $jurnal = Jurnal::with('detailJurnal.coa')->orderByDesc('tanggal_jurnal')->get();
+        $transaksis = Transaksi::orderByDesc('tanggal_transaksi')->get();
+        $users = User::orderBy('name')->get();
+        $coas = Coa::orderBy('kode')->get();
+
+        return view('jurnal.index', compact('jurnal', 'transaksis', 'users', 'coas'));
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'tanggal' => 'required|date',
-                'keterangan' => 'nullable',
-                'transaksi_id' => 'required|integer',
-                'user_id' => 'required|integer'
-            ]);
+        $validated = $request->validate([
+            'tanggal_jurnal' => ['required', 'date'],
+            'referensi' => ['nullable', 'string', 'max:100'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
 
-            Jurnal::create($request->all());
+        Jurnal::create($validated);
 
-            return redirect()->back()->with('success', 'Jurnal berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan jurnal: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Jurnal berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $jurnal = Jurnal::findOrFail($id);
-            $jurnal->update($request->all());
+        $jurnal = Jurnal::findOrFail($id);
 
-            return redirect()->back()->with('success', 'Jurnal berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui jurnal: ' . $e->getMessage());
-        }
+        $validated = $request->validate([
+            'tanggal_jurnal' => ['required', 'date'],
+            'referensi' => ['nullable', 'string', 'max:100'],
+            'keterangan' => ['nullable', 'string'],
+        ]);
+
+        $jurnal->update($validated);
+
+        return redirect()->back()->with('success', 'Jurnal berhasil diperbarui.');
+    }
+
+    public function show($id)
+    {
+        $jurnal = Jurnal::with('detailJurnal.coa')->findOrFail($id);
+
+        return view('jurnal.show', compact('jurnal'));
     }
 
     public function destroy($id)
     {
-        try {
-            $jurnal = Jurnal::findOrFail($id);
-            $jurnal->delete();
+        Jurnal::findOrFail($id)->delete();
 
-            return redirect()->back()->with('success', 'Jurnal berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus jurnal: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Jurnal berhasil dihapus.');
     }
 }

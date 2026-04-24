@@ -9,49 +9,45 @@ class PemasokController extends Controller
 {
     public function index()
     {
-        $pemasok = Pemasok::all();
+        $pemasok = Pemasok::orderBy('nama')->get();
+
         return view('pemasok.index', compact('pemasok'));
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'nama' => 'required',
-                'alamat' => 'required',
-                'kontak' => 'nullable',
-                'kota' => 'required',
-            ]);
+        $validated = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'kontak' => ['nullable', 'string', 'max:150'],
+            'alamat' => ['nullable', 'string', 'max:255'],
+            'kota' => ['nullable', 'string', 'max:100'],
+        ]);
 
-            Pemasok::create($request->all());
+        Pemasok::create($validated);
 
-            return redirect()->back()->with('success', 'Pemasok berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan pemasok: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Pemasok berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $pemasok = Pemasok::findOrFail($id);
-            $pemasok->update($request->all());
+        $pemasok = Pemasok::findOrFail($id);
 
-            return redirect()->back()->with('success', 'Pemasok berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui pemasok: ' . $e->getMessage());
-        }
+        $validated = $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'kontak' => ['nullable', 'string', 'max:150'],
+            'alamat' => ['nullable', 'string', 'max:255'],
+            'kota' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $pemasok->update($validated);
+
+        return redirect()->back()->with('success', 'Pemasok berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        try {
-            $pemasok = Pemasok::findOrFail($id);
-            $pemasok->delete();
+        Pemasok::findOrFail($id)->delete();
 
-            return redirect()->back()->with('success', 'Pemasok berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus pemasok: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Pemasok berhasil dihapus.');
     }
 }

@@ -10,51 +10,58 @@ class ProdukController extends Controller
 {
     public function index()
     {
-        $produk = Produk::all();
-        $pemasok = Pemasok::all();
+        $produk = Produk::with('pemasok')
+            ->orderBy('nama')
+            ->get();
+
+        $pemasok = Pemasok::orderBy('nama')->get();
+
         return view('produk.index', compact('produk', 'pemasok'));
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'kode' => 'required|unique:produk,kode',
-                'nama' => 'required',
-                'harga' => 'required|numeric',
-                'satuan' => 'required|string',
-                'pemasok_id' => 'required|exists:pemasok,id',
-            ]);
+        $validated = $request->validate([
+            'kode' => ['required', 'string', 'max:50', 'unique:produk,kode'],
+            'nama' => ['required', 'string', 'max:255'],
+            'satuan' => ['required', 'string', 'max:50'],
+            'harga' => ['required', 'numeric', 'min:0'],
+            'pemasok_id' => ['nullable', 'exists:pemasok,id'],
+        ]);
 
-            Produk::create($request->all());
+        Produk::create($validated);
 
-            return redirect()->back()->with('success', 'Produk berhasil ditambahkan!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan produk: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Produk berhasil ditambahkan.');
+    }
+
+    public function show($id)
+    {
+        $produk = Produk::with('pemasok')->findOrFail($id);
+
+        return response()->json($produk);
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $produk = Produk::findOrFail($id);
-            $produk->update($request->all());
+        $produk = Produk::findOrFail($id);
 
-            return redirect()->back()->with('success', 'Produk berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui produk: ' . $e->getMessage());
-        }
+        $validated = $request->validate([
+            'kode' => ['required', 'string', 'max:50', 'unique:produk,kode,' . $produk->id],
+            'nama' => ['required', 'string', 'max:255'],
+            'satuan' => ['required', 'string', 'max:50'],
+            'harga' => ['required', 'numeric', 'min:0'],
+            'pemasok_id' => ['nullable', 'exists:pemasok,id'],
+        ]);
+
+        $produk->update($validated);
+
+        return redirect()->back()->with('success', 'Produk berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        try {
-            $produk = Produk::findOrFail($id);
-            $produk->delete();
+        Produk::findOrFail($id)->delete();
 
-            return redirect()->back()->with('success', 'Produk berhasil dihapus!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus produk: ' . $e->getMessage());
-        }
+        return redirect()->back()->with('success', 'Produk berhasil dihapus.');
     }
 }

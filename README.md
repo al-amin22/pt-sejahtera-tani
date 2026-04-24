@@ -1,63 +1,212 @@
 # PT Sejahtera Tani
 
-Web application portfolio project built with Laravel for operational management, transaction tracking, staff workflows, and reporting.
+PT Sejahtera Tani adalah aplikasi web berbasis Laravel untuk pengelolaan operasional internal, pencatatan transaksi, absensi karyawan, data master, serta ringkasan produksi dan laporan keuangan.
 
-## Highlights
+Dokumentasi ini ditujukan agar repository siap dipresentasikan sebagai portfolio project yang profesional.
 
-- Role-based access for admin, staff, and finance users
-- Dashboard views for monitoring operational data
-- CRUD modules for employees, transactions, attendance, accounts, and production results
-- PDF export support for reporting workflows
-- Clean public landing page for portfolio presentation
+## Ringkasan Proyek
 
-## Tech Stack
+- Framework utama: Laravel 11
+- Bahasa: PHP 8.2+
+- Arsitektur: MVC dengan Blade template
+- Database: MySQL / MariaDB / kompatibel
+- Export laporan: PDF via DomPDF
+- Target pengguna: admin, staff, dan finance
+
+## Fitur Utama
+
+### 1. Autentikasi dan Hak Akses
+- Login berbasis role
+- Pemisahan akses untuk admin, staff, dan finance
+- Proteksi route sesuai peran pengguna
+
+### 2. Dashboard
+- Dashboard admin untuk pemantauan data utama
+- Dashboard staff untuk alur kerja operasional
+- Dashboard finance untuk ringkasan keuangan
+
+### 3. Manajemen Data Master
+- Users
+- Karyawan
+- Produk
+- Pemasok
+- COA / akun akuntansi
+- Mata uang
+- Rekening
+
+### 4. Operasional dan Produksi
+- Absensi karyawan
+- Absensi harian
+- Hasil produksi
+- Pengelolaan stok barang
+
+### 5. Keuangan dan Transaksi
+- Transaksi utama
+- Detail transaksi
+- Jurnal dan detail jurnal
+- Arus kas
+- Export laporan PDF
+
+### 6. UX dan Portfolio Readiness
+- Public landing page
+- Tampilan dashboard yang lebih rapi
+- Helper dan IDE support untuk mengurangi false error di editor
+
+## Stack Teknologi
 
 - Laravel 11
 - PHP 8.2+
-- Blade templates
-- MySQL or compatible database
-- DomPDF for exports
+- Blade
+- Eloquent ORM
+- Bootstrap / custom dashboard styling
+- DomPDF
+- Vite untuk asset pipeline
 
-## Main Modules
+## Struktur Folder Utama
 
-- Users and role management
-- Karyawan and absensi tracking
-- Transaksi and detail transaksi
-- Mata uang and rekening management
-- Hasil produksi handling
-- Finance dashboard access
+- app/Http/Controllers — logika aplikasi dan workflow per role
+- app/Models — model Eloquent
+- app/Support — helper global dan helper controller untuk editor support
+- resources/views — tampilan Blade
+- routes/web.php — definisi route dan pembagian akses role
+- database/migrations — struktur tabel database
+- stubs/ — file stub untuk membantu analyzer / IDE
 
-## Project Structure
+## Role Pengguna
 
-- routes/web.php — application routes and role-based access groups
-- app/Http/Controllers — business logic controllers
-- resources/views — Blade views for dashboards and management pages
-- database/migrations — database schema definitions
+### Admin
+- Mengelola seluruh data master
+- Mengelola user
+- Mengelola absensi, transaksi, jurnal, rekening, dan hasil produksi
 
-## Installation
+### Staff
+- Mengelola data operasional harian
+- Input absensi karyawan
+- Input hasil produksi
+- Mengelola transaksi operasional staff
+
+### Finance
+- Melihat dan mengelola informasi finansial
+- Membaca ringkasan transaksi dan arus kas
+- Mendukung proses pelaporan keuangan
+
+## Instalasi
+
+### 1. Install dependency PHP
 
 ```bash
 composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
+```
+
+### 2. Install dependency frontend
+
+```bash
 npm install
+```
+
+### 3. Salin file environment
+
+```bash
+copy .env.example .env
+```
+
+### 4. Generate application key
+
+```bash
+php artisan key:generate
+```
+
+### 5. Konfigurasi database
+
+Atur koneksi database di file .env:
+
+- DB_CONNECTION
+- DB_HOST
+- DB_PORT
+- DB_DATABASE
+- DB_USERNAME
+- DB_PASSWORD
+
+### 6. Jalankan migrasi
+
+```bash
+php artisan migrate
+```
+
+Jika tersedia data awal, jalankan seeder:
+
+```bash
+php artisan db:seed
+```
+
+### 7. Build asset frontend
+
+```bash
 npm run build
 ```
 
-## Running Locally
+## Menjalankan Project
+
+### Mode development
 
 ```bash
 php artisan serve
 ```
 
-## Recommended Portfolio Improvements
+### Jika menggunakan Vite
 
-1. Add screenshots of the dashboards and CRUD pages.
-2. Add seed data for a clean demo environment.
-3. Standardize validation and error handling across controllers.
-4. Add automated tests for critical workflows.
+```bash
+npm run dev
+```
 
-## Notes
+## Alur Penggunaan Singkat
 
-This repository contains an active business-style Laravel application. For a portfolio version, the public landing page and documentation have been improved to present the project more professionally.
+1. Login sesuai role pengguna.
+2. Admin mengelola data master dan monitoring.
+3. Staff menginput absensi, transaksi, dan produksi.
+4. Finance memantau data transaksi dan arus kas.
+5. Laporan dapat diekspor ke PDF bila diperlukan.
+
+## Modul dan Route Penting
+
+- routes/web.php — route utama dan pembagian akses role
+- app/Http/Controllers/UsersController.php — manajemen user admin
+- app/Http/Controllers/DashboardController.php — dashboard admin
+- app/Http/Controllers/Staff/* — modul operasional staff
+- app/Models/BaseModel.php — dukungan static analysis untuk Eloquent
+
+## Catatan Implementasi
+
+- Project ini telah disesuaikan agar lebih siap dijadikan portfolio.
+- Beberapa helper dan stub ditambahkan untuk membantu editor memahami helper Laravel dan method Eloquent.
+- Validasi, redirect, dan view handling dibuat lebih konsisten.
+- Struktur kode difokuskan agar mudah dipelihara dan dikembangkan lebih lanjut.
+
+## Pengembangan Lanjutan yang Disarankan
+
+- Tambahkan data seed demo agar mudah dipresentasikan.
+- Tambahkan screenshot dashboard dan halaman CRUD.
+- Tambahkan test untuk alur penting seperti login, transaksi, dan absensi.
+- Tambahkan role management yang lebih granular jika dibutuhkan.
+- Tambahkan logging dan audit trail untuk aktivitas penting.
+
+## Deployment
+
+Sebelum deployment, pastikan:
+
+- .env production sudah benar
+- APP_KEY terisi
+- database sudah termigrasi
+- storage link sudah dibuat jika diperlukan
+- asset frontend sudah dibuild
+
+```bash
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+## Lisensi
+
+Proyek ini digunakan untuk kebutuhan portfolio dan pengembangan internal. Silakan sesuaikan lisensi sesuai kebutuhan organisasi atau penggunaan pribadi.

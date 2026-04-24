@@ -2,7 +2,6 @@
 
 PT Sejahtera Tani adalah aplikasi web berbasis Laravel untuk pengelolaan operasional internal, pencatatan transaksi, absensi karyawan, data master, serta ringkasan produksi dan laporan keuangan.
 
-Dokumentasi ini ditujukan agar repository siap dipresentasikan sebagai portfolio project yang profesional.
 
 ## Ringkasan Proyek
 
@@ -206,7 +205,3 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 ```
-
-## Lisensi
-
-Proyek ini digunakan untuk kebutuhan portfolio dan pengembangan internal. Silakan sesuaikan lisensi sesuai kebutuhan organisasi atau penggunaan pribadi.

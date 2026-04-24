@@ -12,6 +12,14 @@ use Illuminate\Notifications\Notifiable;
  * @property string $email
  * @property string $role
  * @property string $password
+ * @method static \Illuminate\Database\Eloquent\Builder query()
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder orderByDesc(string $column)
+ * @method static \Illuminate\Database\Eloquent\Builder with($relations)
+ * @method static static create(array $attributes = [])
+ * @method bool save(array $options = [])
+ * @method bool delete()
+ * @mixin \Eloquent
  */
 class User extends Authenticatable
 {

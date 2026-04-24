@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class DetailJurnal extends Model
+/**
+ * @mixin \Eloquent
+ */
+class DetailJurnal extends BaseModel
 {
     protected $table = 'detail_jurnal';
 

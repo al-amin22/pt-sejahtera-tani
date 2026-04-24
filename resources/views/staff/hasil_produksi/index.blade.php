@@ -56,6 +56,9 @@
         opacity: 0.5;
     }
 </style>
+
+<div id="staffProductionMeta" data-scroll-to="{{ session('scrollTo') }}" style="display:none"></div>
+
 @section('content')
 <div class="container">
     <!-- Filter tanggal -->
@@ -350,7 +353,7 @@
                             $percentage = $jumlahStokKeseluruhan > 0 ? ($stokTerpakai / $jumlahStokKeseluruhan) * 100 : 0;
                             @endphp
                             <div class="progress-bar bg-success" role="progressbar"
-                                style="width: {{ $percentage }}%;"
+                                data-percentage="{{ number_format($percentage, 2, '.', '') }}"
                                 aria-valuenow="{{ $percentage }}"
                                 aria-valuemin="0"
                                 aria-valuemax="100">
@@ -721,13 +724,20 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Scroll to section if needed
-        @if(session('scrollTo'))
-        document.getElementById('{{ session('
-            scrollTo ') }}').scrollIntoView({
-            behavior: 'smooth'
+        document.querySelectorAll('.progress-bar[data-percentage]').forEach(function(bar) {
+            bar.style.width = bar.dataset.percentage + '%';
         });
-        @endif
+
+        // Scroll to section if needed
+        const scrollToId = document.getElementById('staffProductionPage')
+            ? document.getElementById('staffProductionPage').dataset.scrollTo
+            : '';
+        if (scrollToId) {
+            const element = document.getElementById(scrollToId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
 
         // Auto-focus on first input in modal when shown
         const modals = ['quickInputModal', 'addProductionModal'];

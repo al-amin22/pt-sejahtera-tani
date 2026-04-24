@@ -22,15 +22,17 @@ class AbsensiController extends Controller
             'foto' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:10240'],
         ]);
 
+        $publicPath = rtrim(dirname(__DIR__, 3), '\\/') . DIRECTORY_SEPARATOR . 'public';
+
         if ($request->hasFile('video')) {
             $videoName = time() . '_' . $request->file('video')->getClientOriginalName();
-            $request->file('video')->move(public_path('video'), $videoName);
+            $request->file('video')->move($publicPath . DIRECTORY_SEPARATOR . 'video', $videoName);
             $validated['video'] = 'video/' . $videoName;
         }
 
         if ($request->hasFile('foto')) {
             $fotoName = time() . '_' . $request->file('foto')->getClientOriginalName();
-            $request->file('foto')->move(public_path('foto'), $fotoName);
+            $request->file('foto')->move($publicPath . DIRECTORY_SEPARATOR . 'foto', $fotoName);
             $validated['foto'] = 'foto/' . $fotoName;
         }
 
@@ -44,20 +46,22 @@ class AbsensiController extends Controller
         $absensi = Absensi::findOrFail($id);
 
         $validated = $request->validate([
-            'tanggal' => ['required', 'date', 'unique:absensi,tanggal,' . $absensi->id],
+            'tanggal' => ['required', 'date', 'unique:absensi,tanggal,' . $id],
             'video' => ['nullable', 'file', 'mimes:mp4,mov,avi', 'max:204800'],
             'foto' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:10240'],
         ]);
 
+        $publicPath = rtrim(dirname(__DIR__, 3), '\\/') . DIRECTORY_SEPARATOR . 'public';
+
         if ($request->hasFile('video')) {
             $videoName = time() . '_' . $request->file('video')->getClientOriginalName();
-            $request->file('video')->move(public_path('video'), $videoName);
+            $request->file('video')->move($publicPath . DIRECTORY_SEPARATOR . 'video', $videoName);
             $validated['video'] = 'video/' . $videoName;
         }
 
         if ($request->hasFile('foto')) {
             $fotoName = time() . '_' . $request->file('foto')->getClientOriginalName();
-            $request->file('foto')->move(public_path('foto'), $fotoName);
+            $request->file('foto')->move($publicPath . DIRECTORY_SEPARATOR . 'foto', $fotoName);
             $validated['foto'] = 'foto/' . $fotoName;
         }
 

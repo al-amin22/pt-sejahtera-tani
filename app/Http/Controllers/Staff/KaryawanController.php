@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Staff;
 use Illuminate\Http\Request;
 use App\Models\Karyawan;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class KaryawanController extends Controller
 {
@@ -12,9 +14,9 @@ class KaryawanController extends Controller
     {
         try {
             $karyawans = Karyawan::all();
-            return view('staff.karyawan.index', compact('karyawans'));
+            return View::make('staff.karyawan.index', compact('karyawans'));
         } catch (\Exception $e) {
-            return view('staff.karyawan.index', ['error' => 'Gagal mengambil data']);
+            return View::make('staff.karyawan.index', ['error' => 'Gagal mengambil data']);
         }
     }
 
@@ -26,9 +28,9 @@ class KaryawanController extends Controller
                 'jobdesk' => 'nullable|string|max:255',
             ]);
             Karyawan::create($validatedData);
-            return redirect()->route('staff.karyawan.index')->with('success', 'Data karyawan berhasil ditambahkan');
+            return Redirect::route('staff.karyawan.index')->with('success', 'Data karyawan berhasil ditambahkan');
         } catch (\Exception $e) {
-            return redirect()->route('staff.karyawan.index')->with('error', 'Gagal menambahkan data karyawan');
+            return Redirect::route('staff.karyawan.index')->with('error', 'Gagal menambahkan data karyawan');
         }
     }
 
@@ -36,9 +38,9 @@ class KaryawanController extends Controller
     {
         try {
             $karyawan = Karyawan::findOrFail($id);
-            return view('staff.karyawan.show', compact('karyawan'));
+            return View::make('staff.karyawan.show', compact('karyawan'));
         } catch (\Exception $e) {
-            return redirect()->route('staff.karyawan.index')->with('error', 'Gagal mengambil data karyawan');
+            return Redirect::route('staff.karyawan.index')->with('error', 'Gagal mengambil data karyawan');
         }
     }
 
@@ -51,9 +53,9 @@ class KaryawanController extends Controller
                 'jobdesk' => 'nullable|string|max:255',
             ]);
             $karyawan->update($validatedData);
-            return redirect()->route('staff.karyawan.index')->with('success', 'Data karyawan berhasil diperbarui');
+            return Redirect::route('staff.karyawan.index')->with('success', 'Data karyawan berhasil diperbarui');
         } catch (\Exception $e) {
-            return redirect()->route('staff.karyawan.index')->with('error', 'Gagal memperbarui data karyawan');
+            return Redirect::route('staff.karyawan.index')->with('error', 'Gagal memperbarui data karyawan');
         }
     }
 
@@ -62,9 +64,9 @@ class KaryawanController extends Controller
         try {
             $karyawan = Karyawan::findOrFail($id);
             $karyawan->delete();
-            return redirect()->route('staff.karyawan.index')->with('success', 'Data karyawan berhasil dihapus');
+            return Redirect::route('staff.karyawan.index')->with('success', 'Data karyawan berhasil dihapus');
         } catch (\Exception $e) {
-            return redirect()->route('staff.karyawan.index')->with('error', 'Gagal menghapus data karyawan');
+            return Redirect::route('staff.karyawan.index')->with('error', 'Gagal menghapus data karyawan');
         }
     }
 }

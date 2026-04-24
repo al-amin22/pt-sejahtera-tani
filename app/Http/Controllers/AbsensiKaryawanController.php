@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\AbsensiKaryawan;
 use App\Models\Absensi;
 use App\Models\Karyawan;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\View;
 
 class AbsensiKaryawanController extends Controller
 {
     public function index()
     {
         $absensiKaryawans = AbsensiKaryawan::with(['absensi', 'karyawan'])->get();
-        $absensis = Absensi::orderByDesc('tanggal')->get();
-        $karyawans = Karyawan::orderBy('nama')->get();
+        $absensis = Absensi::query()->orderByDesc('tanggal')->get();
+        $karyawans = Karyawan::query()->orderBy('nama')->get();
 
-        return view('absensi_karyawan.index', compact('absensiKaryawans', 'absensis', 'karyawans'));
+        return View::make('absensi_karyawan.index', compact('absensiKaryawans', 'absensis', 'karyawans'));
     }
 
     public function store(Request $request)
@@ -30,7 +33,7 @@ class AbsensiKaryawanController extends Controller
 
         AbsensiKaryawan::create($validated);
 
-        return redirect()->route('absensi_karyawan.index')->with('success', 'Data absensi karyawan berhasil ditambahkan.');
+        return Redirect::route('absensi_karyawan.index')->with('success', 'Data absensi karyawan berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
@@ -47,18 +50,18 @@ class AbsensiKaryawanController extends Controller
 
         $absensiKaryawan->update($validated);
 
-        return redirect()->route('absensi_karyawan.index')->with('success', 'Data absensi karyawan berhasil diperbarui.');
+        return Redirect::route('absensi_karyawan.index')->with('success', 'Data absensi karyawan berhasil diperbarui.');
     }
 
     public function data($id)
     {
-        return response()->json(AbsensiKaryawan::with(['absensi', 'karyawan'])->findOrFail($id));
+        return Response::json(AbsensiKaryawan::with(['absensi', 'karyawan'])->findOrFail($id));
     }
 
     public function destroy($id)
     {
         AbsensiKaryawan::findOrFail($id)->delete();
 
-        return redirect()->route('absensi_karyawan.index')->with('success', 'Data absensi karyawan berhasil dihapus.');
+        return Redirect::route('absensi_karyawan.index')->with('success', 'Data absensi karyawan berhasil dihapus.');
     }
 }

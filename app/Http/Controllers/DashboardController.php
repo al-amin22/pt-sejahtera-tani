@@ -14,14 +14,13 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         // Tahun aktif (default tahun berjalan)
-        $tahun = $request->get('tahun', date('Y'));
-        $bulan = $request->get('bulan', '');
-        $rekeningId = $request->get('rekening_id', '');
+        $tahun = $request->input('tahun', date('Y'));
+        $bulan = $request->input('bulan', '');
 
         // =============================
         // Transaksi utama (filtered)
         // =============================
-        $query = Transaksi::with(['details', 'details.dariRekening', 'details.keRekening', 'user'])
+        $query = Transaksi::query()->with(['details', 'details.dariRekening', 'details.keRekening', 'user'])
             ->whereYear('tanggal_transaksi', $tahun)
             ->orderBy('tanggal_transaksi', 'asc');
 
@@ -79,12 +78,12 @@ class DashboardController extends Controller
         // =============================
         $bulananData = [];
         for ($i = 1; $i <= 12; $i++) {
-            $pemasukanBulan = Transaksi::where('total', '<', 0)
+            $pemasukanBulan = Transaksi::query()->where('total', '<', 0)
                 ->whereYear('tanggal_transaksi', $tahun)
                 ->whereMonth('tanggal_transaksi', $i)
                 ->sum('total');
 
-            $pengeluaranBulan = Transaksi::where('total', '>=', 0)
+            $pengeluaranBulan = Transaksi::query()->where('total', '>=', 0)
                 ->whereYear('tanggal_transaksi', $tahun)
                 ->whereMonth('tanggal_transaksi', $i)
                 ->sum('total');
@@ -99,14 +98,14 @@ class DashboardController extends Controller
         // =============================
         // Transaksi Terbaru
         // =============================
-        $transaksiTerbaru = Transaksi::with(['details', 'user'])
+        $transaksiTerbaru = Transaksi::query()->with(['details', 'user'])
             ->whereYear('tanggal_transaksi', $tahun)
             ->orderBy('tanggal_transaksi', 'desc')
             ->take(5)
             ->get();
 
         // Rekening data
-        $rekening = Rekening::all();
+        $rekening = Rekening::query()->orderBy('nama')->get();
 
         return view('dashboard.admin', compact(
             'totalPemasukan',

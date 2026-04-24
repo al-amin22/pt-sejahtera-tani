@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Produk extends Model
+/**
+ * @mixin \Eloquent
+ */
+class Produk extends BaseModel
 {
     protected $table = 'produk';
 

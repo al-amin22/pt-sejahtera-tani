@@ -3,28 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\View;
 use Illuminate\Validation\Rule;
-use Illuminate\View\View;
 
 class UsersController extends Controller
 {
-    public function index(): View
+    public function index()
     {
         $users = User::query()
             ->orderBy('name')
             ->get();
 
-        return view('users.index', compact('users'));
+        return View::make('users.index', compact('users'));
     }
 
     public function exportCsv()
     {
-        $fileName = 'users-' . now()->format('Ymd-His') . '.csv';
+        $fileName = 'users-' . date('Ymd-His') . '.csv';
 
         $users = User::query()
             ->orderBy('name')
@@ -39,7 +38,7 @@ class UsersController extends Controller
                     $user->name,
                     $user->email,
                     $user->role,
-                    optional($user->created_at)->format('Y-m-d H:i:s'),
+                    $user->created_at?->format('Y-m-d H:i:s'),
                 ]);
             }
 
@@ -51,13 +50,13 @@ class UsersController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'staff', 'finance'])],
+            'role' => ['required', 'in:admin,staff,finance'],
         ]);
 
         User::create([
@@ -67,25 +66,24 @@ class UsersController extends Controller
             'role' => $validated['role'],
         ]);
 
-        return redirect()
-            ->route('users.index')
+        return \Illuminate\Support\Facades\Redirect::route('users.index')
             ->with('success', 'User berhasil ditambahkan.');
     }
 
     public function show(User $id)
     {
-        return view('users.show', [
+        return View::make('users.show', [
             'user' => $id,
         ]);
     }
 
-    public function update(Request $request, User $id): RedirectResponse
+    public function update(Request $request, User $id)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($id->id)],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $id->id],
             'password' => ['nullable', 'string', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'staff', 'finance'])],
+            'role' => ['required', 'in:admin,staff,finance'],
         ]);
 
         $id->name = $validated['name'];
@@ -98,23 +96,20 @@ class UsersController extends Controller
 
         $id->save();
 
-        return redirect()
-            ->route('users.index')
+        return \Illuminate\Support\Facades\Redirect::route('users.index')
             ->with('success', 'User berhasil diperbarui.');
     }
 
-    public function destroy(User $id): RedirectResponse
+    public function destroy(User $id)
     {
         if (Auth::id() === $id->id) {
-            return redirect()
-                ->route('users.index')
+            return \Illuminate\Support\Facades\Redirect::route('users.index')
                 ->with('error', 'Akun yang sedang digunakan tidak dapat dihapus.');
         }
 
         $id->delete();
 
-        return redirect()
-            ->route('users.index')
+        return \Illuminate\Support\Facades\Redirect::route('users.index')
             ->with('success', 'User berhasil dihapus.');
     }
 }

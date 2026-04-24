@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class DetailTransaksi extends Model
+/**
+ * @mixin \Eloquent
+ */
+class DetailTransaksi extends BaseModel
 {
     protected $table = 'detail_transaksi';
 

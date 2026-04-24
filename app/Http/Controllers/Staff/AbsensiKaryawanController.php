@@ -9,6 +9,8 @@ use App\Models\Karyawan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class AbsensiKaryawanController extends Controller
 {
@@ -19,10 +21,11 @@ class AbsensiKaryawanController extends Controller
             $selectedDate = $request->input('tanggal', Carbon::today()->format('Y-m-d'));
 
             // Cari atau buat record absensi untuk tanggal tersebut
-            $absensi = Absensi::firstOrCreate(
-                ['tanggal' => $selectedDate],
-                ['tanggal' => $selectedDate]
-            );
+            $absensi = Absensi::where('tanggal', $selectedDate)->first();
+
+            if (! $absensi) {
+                $absensi = Absensi::create(['tanggal' => $selectedDate]);
+            }
 
             // Ambil semua karyawan
             $karyawans = Karyawan::all();
@@ -33,14 +36,14 @@ class AbsensiKaryawanController extends Controller
                 ->get()
                 ->keyBy('karyawan_id');
 
-            return view('staff.absensi_karyawan.index', compact(
+            return View::make('staff.absensi_karyawan.index', compact(
                 'absensi',
                 'karyawans',
                 'absensiKaryawans',
                 'selectedDate'
             ));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal mengambil data: ' . $e->getMessage());
+            return Redirect::back()->with('error', 'Gagal mengambil data: ' . $e->getMessage());
         }
     }
 
@@ -49,10 +52,12 @@ class AbsensiKaryawanController extends Controller
         try {
             DB::beginTransaction();
 
-            $absensi = Absensi::firstOrCreate(
-                ['tanggal' => $request->input('tanggal')],
-                ['tanggal' => $request->input('tanggal')]
-            );
+            $tanggal = $request->input('tanggal');
+            $absensi = Absensi::where('tanggal', $tanggal)->first();
+
+            if (! $absensi) {
+                $absensi = Absensi::create(['tanggal' => $tanggal]);
+            }
 
             foreach ($request->input('karyawan', []) as $karyawanId => $data) {
                 if (!empty($data['status'])) {
@@ -77,11 +82,11 @@ class AbsensiKaryawanController extends Controller
 
             DB::commit();
 
-            return redirect()->route('staff.absensi_karyawan.index', ['tanggal' => $request->input('tanggal')])
+            return Redirect::route('staff.absensi_karyawan.index', ['tanggal' => $request->input('tanggal')])
                 ->with('success', 'Data absensi berhasil disimpan');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+            return Redirect::back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
 
@@ -91,9 +96,9 @@ class AbsensiKaryawanController extends Controller
             $absensiKaryawan = AbsensiKaryawan::findOrFail($id);
             $absensiKaryawan->delete();
 
-            return redirect()->back()->with('success', 'Data absensi karyawan berhasil dihapus');
+            return Redirect::back()->with('success', 'Data absensi karyawan berhasil dihapus');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+            return Redirect::back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class MataUang extends Model
+/**
+ * @mixin \Eloquent
+ */
+class MataUang extends BaseModel
 {
     protected $table = 'mata_uang';
 

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Pemasok extends Model
+/**
+ * @mixin \Eloquent
+ */
+class Pemasok extends BaseModel
 {
     protected $table = 'pemasok';
 

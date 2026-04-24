@@ -9,24 +9,26 @@ use App\Models\Absensi;
 use App\Models\StokBarang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class HasilProduksiController extends Controller
 {
     public function index(Request $request)
     {
-        $tanggal = $request->get('tanggal', now()->format('Y-m-d'));
+        $tanggal = $request->input('tanggal', Carbon::now()->format('Y-m-d'));
 
         $absensi = Absensi::whereDate('tanggal', $tanggal)->first();
-        $stokKeseluruhan = (float) StokBarang::sum('stok');
-        $stokTerpakai = (float) HasilProduksi::sum('jumlah');
+        $stokKeseluruhan = (float) StokBarang::all()->sum('stok');
+        $stokTerpakai = (float) HasilProduksi::all()->sum('jumlah');
         $stokTersisa = max($stokKeseluruhan - $stokTerpakai, 0);
 
         $data = [
             'tanggal' => $tanggal,
-            'totalProduksiPerJenis' => collect(),
+            'totalProduksiPerJenis' => [],
             'jumlahKaryawan' => 0,
-            'karyawanHadir' => collect(),
-            'hasilProduksi' => collect(),
+            'karyawanHadir' => [],
+            'hasilProduksi' => [],
             'absensi' => $absensi,
             'stokTerpakai' => $stokTerpakai,
             'jumlahStokTersisa' => $stokTersisa,
@@ -48,7 +50,8 @@ class HasilProduksiController extends Controller
 
             $totalProduksiPerJenis = $hasilProduksi
                 ->groupBy('jenis_hasil')
-                ->map(fn ($items) => $items->sum('jumlah'));
+                ->map(fn ($items) => $items->sum('jumlah'))
+                ->all();
 
             $data['totalProduksiPerJenis'] = $totalProduksiPerJenis;
             $data['jumlahKaryawan'] = $karyawanHadir->count();
@@ -56,14 +59,14 @@ class HasilProduksiController extends Controller
             $data['hasilProduksi'] = $hasilProduksi;
         }
 
-        return view('staff.hasil_produksi.index', $data);
+        return View::make('staff.hasil_produksi.index', $data);
     }
 
     public function show($id)
     {
         $hasilProduksi = HasilProduksi::with(['absensiKaryawan.karyawan', 'absensi'])->findOrFail($id);
 
-        return view('staff.hasil_produksi.show', compact('hasilProduksi'));
+        return View::make('staff.hasil_produksi.show', compact('hasilProduksi'));
     }
 
     public function tambahStok(Request $request)
@@ -77,7 +80,7 @@ class HasilProduksiController extends Controller
             'stok' => $validated['stok'],
         ]);
 
-        return redirect()->back()->with('success', 'Stok berhasil ditambahkan.');
+        return Redirect::back()->with('success', 'Stok berhasil ditambahkan.');
     }
 
     public function store(Request $request)
@@ -92,7 +95,7 @@ class HasilProduksiController extends Controller
 
         HasilProduksi::create($validated);
 
-        return redirect()->back()->with('success', 'Data hasil produksi berhasil disimpan.');
+        return Redirect::back()->with('success', 'Data hasil produksi berhasil disimpan.');
     }
 
     public function quickStore(Request $request)
@@ -111,7 +114,7 @@ class HasilProduksiController extends Controller
             ->first();
 
         if (! $karyawan) {
-            return redirect()->back()->with('error', 'Tidak ada karyawan hadir pada tanggal tersebut.');
+            return Redirect::back()->with('error', 'Tidak ada karyawan hadir pada tanggal tersebut.');
         }
 
         HasilProduksi::create([
@@ -122,7 +125,7 @@ class HasilProduksiController extends Controller
             'keterangan' => $validated['keterangan'] ?? null,
         ]);
 
-        return redirect()->back()->with('success', 'Data hasil produksi berhasil disimpan.');
+        return Redirect::back()->with('success', 'Data hasil produksi berhasil disimpan.');
     }
 
     public function storeOrUpdate(Request $request)
@@ -141,12 +144,12 @@ class HasilProduksiController extends Controller
 
         if ($existing) {
             $existing->update($validated);
-            return redirect()->back()->with('success', 'Data hasil produksi berhasil diperbarui.');
+            return Redirect::back()->with('success', 'Data hasil produksi berhasil diperbarui.');
         }
 
         HasilProduksi::create($validated);
 
-        return redirect()->back()->with('success', 'Data hasil produksi berhasil disimpan.');
+        return Redirect::back()->with('success', 'Data hasil produksi berhasil disimpan.');
     }
 
     public function storeMultiple(Request $request)
@@ -170,7 +173,7 @@ class HasilProduksiController extends Controller
             );
         }
 
-        return redirect()->back()->with('success', 'Data hasil produksi massal berhasil disimpan.');
+        return Redirect::back()->with('success', 'Data hasil produksi massal berhasil disimpan.');
     }
 
     public function update(Request $request, $id)
@@ -185,13 +188,13 @@ class HasilProduksiController extends Controller
 
         HasilProduksi::findOrFail($id)->update($validated);
 
-        return redirect()->back()->with('success', 'Data hasil produksi berhasil diperbarui.');
+        return Redirect::back()->with('success', 'Data hasil produksi berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         HasilProduksi::findOrFail($id)->delete();
 
-        return redirect()->back()->with('success', 'Data hasil produksi berhasil dihapus.');
+        return Redirect::back()->with('success', 'Data hasil produksi berhasil dihapus.');
     }
 }

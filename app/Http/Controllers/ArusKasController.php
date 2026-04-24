@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\ArusKas;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class ArusKasController extends Controller
 {
@@ -13,7 +15,7 @@ class ArusKasController extends Controller
         $arus_kas = ArusKas::with('transaksi')->orderByDesc('tanggal')->get();
         $transaksis = Transaksi::orderByDesc('tanggal_transaksi')->get();
 
-        return view('arus_kas.index', compact('arus_kas', 'transaksis'));
+        return View::make('arus_kas.index', compact('arus_kas', 'transaksis'));
     }
 
     public function store(Request $request)
@@ -27,7 +29,7 @@ class ArusKasController extends Controller
 
         ArusKas::create($validated);
 
-        return redirect()->back()->with('success', 'Arus kas berhasil ditambahkan.');
+        return Redirect::back()->with('success', 'Arus kas berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
@@ -43,13 +45,13 @@ class ArusKasController extends Controller
 
         $arus->update($validated);
 
-        return redirect()->back()->with('success', 'Arus kas berhasil diperbarui.');
+        return Redirect::back()->with('success', 'Arus kas berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         ArusKas::findOrFail($id)->delete();
 
-        return redirect()->back()->with('success', 'Arus kas berhasil dihapus.');
+        return Redirect::back()->with('success', 'Arus kas berhasil dihapus.');
     }
 }

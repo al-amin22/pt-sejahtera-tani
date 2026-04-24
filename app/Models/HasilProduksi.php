@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class HasilProduksi extends Model
+/**
+ * @mixin \Eloquent
+ */
+class HasilProduksi extends BaseModel
 {
     protected $table = 'hasil_produksi';
 

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Coa extends Model
+/**
+ * @mixin \Eloquent
+ */
+class Coa extends BaseModel
 {
     protected $table = 'coa';
 

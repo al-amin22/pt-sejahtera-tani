@@ -7,6 +7,8 @@ use App\Models\Coa;
 use App\Models\Transaksi;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class JurnalController extends Controller
 {
@@ -17,7 +19,7 @@ class JurnalController extends Controller
         $users = User::orderBy('name')->get();
         $coas = Coa::orderBy('kode')->get();
 
-        return view('jurnal.index', compact('jurnal', 'transaksis', 'users', 'coas'));
+        return View::make('jurnal.index', compact('jurnal', 'transaksis', 'users', 'coas'));
     }
 
     public function store(Request $request)
@@ -30,7 +32,7 @@ class JurnalController extends Controller
 
         Jurnal::create($validated);
 
-        return redirect()->back()->with('success', 'Jurnal berhasil ditambahkan.');
+        return Redirect::back()->with('success', 'Jurnal berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
@@ -45,20 +47,20 @@ class JurnalController extends Controller
 
         $jurnal->update($validated);
 
-        return redirect()->back()->with('success', 'Jurnal berhasil diperbarui.');
+        return Redirect::back()->with('success', 'Jurnal berhasil diperbarui.');
     }
 
     public function show($id)
     {
         $jurnal = Jurnal::with('detailJurnal.coa')->findOrFail($id);
 
-        return view('jurnal.show', compact('jurnal'));
+        return View::make('jurnal.show', compact('jurnal'));
     }
 
     public function destroy($id)
     {
         Jurnal::findOrFail($id)->delete();
 
-        return redirect()->back()->with('success', 'Jurnal berhasil dihapus.');
+        return Redirect::back()->with('success', 'Jurnal berhasil dihapus.');
     }
 }

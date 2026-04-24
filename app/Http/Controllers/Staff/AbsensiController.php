@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Staff;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class AbsensiController extends Controller
 {
@@ -12,10 +14,10 @@ class AbsensiController extends Controller
     {
         try {
             $absensis = Absensi::all();
-            $absensiGetTanggal = Absensi::select('tanggal')->get();
-            return view('staff.absensi.index', compact('absensis', 'absensiGetTanggal'));
+            $absensiGetTanggal = Absensi::all(['tanggal']);
+            return View::make('staff.absensi.index', compact('absensis', 'absensiGetTanggal'));
         } catch (\Exception $e) {
-            return view('staff.absensi.index', ['error' => 'Gagal mengambil data']);
+            return View::make('staff.absensi.index', ['error' => 'Gagal mengambil data']);
         }
     }
 
@@ -28,25 +30,27 @@ class AbsensiController extends Controller
                 'foto'    => 'nullable|file|mimes:jpg,jpeg,png|max:512000000', // max 50MB
             ]);
 
+            $publicPath = rtrim(dirname(__DIR__, 4), '\\/') . DIRECTORY_SEPARATOR . 'public';
+
             // Simpan file video jika ada
             if ($request->hasFile('video')) {
                 $videoName = time() . '_' . $request->file('video')->getClientOriginalName();
-                $request->file('video')->move(public_path('video'), $videoName);
+                $request->file('video')->move($publicPath . DIRECTORY_SEPARATOR . 'video', $videoName);
                 $validatedData['video'] = 'video/' . $videoName;
             }
 
             // Simpan file foto jika ada
             if ($request->hasFile('foto')) {
                 $fotoName = time() . '_' . $request->file('foto')->getClientOriginalName();
-                $request->file('foto')->move(public_path('foto'), $fotoName);
+                $request->file('foto')->move($publicPath . DIRECTORY_SEPARATOR . 'foto', $fotoName);
                 $validatedData['foto'] = 'foto/' . $fotoName;
             }
 
             Absensi::create($validatedData);
 
-            return redirect()->route('staff.absensi.index')->with('success', 'Data absensi berhasil ditambahkan');
+            return Redirect::route('staff.absensi.index')->with('success', 'Data absensi berhasil ditambahkan');
         } catch (\Exception $e) {
-            return redirect()->route('staff.absensi.index')->with('error', 'Gagal menambahkan data absensi');
+            return Redirect::route('staff.absensi.index')->with('error', 'Gagal menambahkan data absensi');
         }
     }
 
@@ -61,25 +65,27 @@ class AbsensiController extends Controller
                 'foto'    => 'nullable|file|mimes:jpg,jpeg,png|max:512000000',
             ]);
 
+            $publicPath = rtrim(dirname(__DIR__, 4), '\\/') . DIRECTORY_SEPARATOR . 'public';
+
             // Simpan file video baru jika diupload
             if ($request->hasFile('video')) {
                 $videoName = time() . '_' . $request->file('video')->getClientOriginalName();
-                $request->file('video')->move(public_path('video'), $videoName);
+                $request->file('video')->move($publicPath . DIRECTORY_SEPARATOR . 'video', $videoName);
                 $validatedData['video'] = 'video/' . $videoName;
             }
 
             // Simpan file foto baru jika diupload
             if ($request->hasFile('foto')) {
                 $fotoName = time() . '_' . $request->file('foto')->getClientOriginalName();
-                $request->file('foto')->move(public_path('foto'), $fotoName);
+                $request->file('foto')->move($publicPath . DIRECTORY_SEPARATOR . 'foto', $fotoName);
                 $validatedData['foto'] = 'foto/' . $fotoName;
             }
 
             $absensi->update($validatedData);
 
-            return redirect()->route('staff.absensi.index')->with('success', 'Data absensi berhasil diperbarui');
+            return Redirect::route('staff.absensi.index')->with('success', 'Data absensi berhasil diperbarui');
         } catch (\Exception $e) {
-            return redirect()->route('staff.absensi.index')->with('error', 'Gagal memperbarui data absensi');
+            return Redirect::route('staff.absensi.index')->with('error', 'Gagal memperbarui data absensi');
         }
     }
 
@@ -88,9 +94,9 @@ class AbsensiController extends Controller
     {
         try {
             $absensi = Absensi::findOrFail($id);
-            return view('staff.absensi.show', compact('absensi'));
+            return View::make('staff.absensi.show', compact('absensi'));
         } catch (\Exception $e) {
-            return redirect()->route('staff.absensi.index')->with('error', 'Gagal mengambil data absensi');
+            return Redirect::route('staff.absensi.index')->with('error', 'Gagal mengambil data absensi');
         }
     }
 
@@ -100,9 +106,9 @@ class AbsensiController extends Controller
             $absensi = Absensi::findOrFail($id);
             $absensi->delete();
 
-            return redirect()->route('staff.absensi.index')->with('success', 'Data absensi berhasil dihapus');
+            return Redirect::route('staff.absensi.index')->with('success', 'Data absensi berhasil dihapus');
         } catch (\Exception $e) {
-            return redirect()->route('staff.absensi.index')->with('error', 'Gagal menghapus data absensi');
+            return Redirect::route('staff.absensi.index')->with('error', 'Gagal menghapus data absensi');
         }
     }
 }

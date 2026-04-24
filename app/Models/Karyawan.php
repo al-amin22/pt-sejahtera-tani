@@ -3,9 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Karyawan extends Model
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder query()
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder orderByDesc(string $column)
+ * @method static \Illuminate\Database\Eloquent\Builder with($relations)
+ * @mixin \Eloquent
+ */
+class Karyawan extends BaseModel
 {
     use HasFactory;
 

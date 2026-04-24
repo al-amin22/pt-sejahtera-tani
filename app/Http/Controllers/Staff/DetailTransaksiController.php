@@ -6,6 +6,8 @@ use App\Models\DetailTransaksi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class DetailTransaksiController extends Controller
 {
@@ -16,14 +18,14 @@ class DetailTransaksiController extends Controller
             ->where('ke_rekening_id', 4)
             ->get();
 
-        return view('staff.detail_transaksi.index', compact('details'));
+        return View::make('staff.detail_transaksi.index', compact('details'));
     }
 
 
     public function store(Request $request)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'transaksi_id'      => 'required|integer',
                 'nama_barang'       => 'required|string|max:255',
                 'jumlah'            => 'required|integer',
@@ -38,7 +40,7 @@ class DetailTransaksiController extends Controller
             ]);
 
             // Hitung subtotal
-            $subtotal = $request->jumlah * $request->harga;
+            $subtotal = $validated['jumlah'] * $validated['harga'];
 
             // Default null
             $filePath = null;
@@ -46,38 +48,40 @@ class DetailTransaksiController extends Controller
             // Upload file jika ada
             if ($request->hasFile('referensi')) {
                 $fileName = time() . '_' . $request->file('referensi')->getClientOriginalName();
-                $request->file('referensi')->move(public_path('nota'), $fileName);
+                $publicPath = rtrim(dirname(__DIR__, 4), '\\/') . DIRECTORY_SEPARATOR . 'public';
+                $request->file('referensi')->move($publicPath . DIRECTORY_SEPARATOR . 'nota', $fileName);
                 $filePath = 'nota/' . $fileName;
             }
 
             // Simpan detail transaksi
             DetailTransaksi::create([
-                'transaksi_id'      => $request->transaksi_id,
-                'produk_id'         => $request->produk_id,
-                'jumlah'            => $request->jumlah,
+                'transaksi_id'      => $validated['transaksi_id'],
+                'produk_id'         => $validated['produk_id'] ?? null,
+                'nama_barang'       => $validated['nama_barang'],
+                'jumlah'            => $validated['jumlah'],
                 'subtotal'          => $subtotal,
-                'tanggal_transaksi' => $request->tanggal_transaksi,
-                'jenis'             => $request->jenis,
-                'mata_uang_id'      => $request->mata_uang_id,
+                'tanggal_transaksi' => $validated['tanggal_transaksi'],
+                'jenis'             => $validated['jenis'],
+                'mata_uang_id'      => $validated['mata_uang_id'],
                 'user_id'           => 'Admin', // lebih bagus ambil dari user login, bukan hardcode "Admin"
-                'keterangan'        => $request->keterangan,
-                'dari_rekening_id'  => $request->dari_rekening_id,
-                'ke_rekening_id'    => $request->ke_rekening_id,
+                'keterangan'        => $validated['keterangan'] ?? null,
+                'dari_rekening_id'  => $validated['dari_rekening_id'] ?? null,
+                'ke_rekening_id'    => $validated['ke_rekening_id'] ?? null,
                 'referensi'         => $filePath,
             ]);
 
             // Update total dan tanggal_transaksi di tabel transaksi
-            $total = DetailTransaksi::where('transaksi_id', $request->transaksi_id)->sum('subtotal');
+            $total = DetailTransaksi::where('transaksi_id', $validated['transaksi_id'])->sum('subtotal');
 
-            $transaksi = Transaksi::findOrFail($request->transaksi_id);
+            $transaksi = Transaksi::findOrFail($validated['transaksi_id']);
             $transaksi->update([
                 'total'             => $total,
-                'tanggal_transaksi' => $request->tanggal_transaksi
+                'tanggal_transaksi' => $validated['tanggal_transaksi']
             ]);
 
-            return redirect()->back()->with('success', 'Detail transaksi berhasil ditambahkan!');
+            return Redirect::back()->with('success', 'Detail transaksi berhasil ditambahkan!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menambahkan detail transaksi: ' . $e->getMessage());
+            return Redirect::back()->with('error', 'Gagal menambahkan detail transaksi: ' . $e->getMessage());
         }
     }
 
@@ -85,7 +89,7 @@ class DetailTransaksiController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $request->validate([
+            $validated = $request->validate([
                 'produk_id'         => 'required|integer',
                 'jumlah'            => 'required|integer',
                 'harga'             => 'required|numeric',
@@ -101,7 +105,7 @@ class DetailTransaksiController extends Controller
             $detail = DetailTransaksi::findOrFail($id);
 
             // Hitung ulang subtotal
-            $subtotal = $request->jumlah * $request->harga;
+            $subtotal = $validated['jumlah'] * $validated['harga'];
 
             // Default path = path lama
             $filePath = $detail->referensi;
@@ -109,28 +113,30 @@ class DetailTransaksiController extends Controller
             // Kalau ada file baru
             if ($request->hasFile('referensi')) {
                 // Hapus file lama
-                if ($detail->referensi && file_exists(public_path($detail->referensi))) {
-                    unlink(public_path($detail->referensi));
+                $publicPath = rtrim(dirname(__DIR__, 4), '\\/') . DIRECTORY_SEPARATOR . 'public';
+                $oldFile = $publicPath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $detail->referensi);
+                if ($detail->referensi && file_exists($oldFile)) {
+                    unlink($oldFile);
                 }
 
                 // Simpan file baru
                 $fileName = time() . '_' . $request->file('referensi')->getClientOriginalName();
-                $request->file('referensi')->move(public_path('nota'), $fileName);
+                $request->file('referensi')->move($publicPath . DIRECTORY_SEPARATOR . 'nota', $fileName);
                 $filePath = 'nota/' . $fileName;
             }
 
             // Update detail transaksi
             $detail->update([
-                'produk_id'         => $request->produk_id,
-                'jumlah'            => $request->jumlah,
+                'produk_id'         => $validated['produk_id'],
+                'jumlah'            => $validated['jumlah'],
                 'subtotal'          => $subtotal,
-                'tanggal_transaksi' => $request->tanggal_transaksi,
-                'jenis'             => $request->jenis,
-                'mata_uang_id'      => $request->mata_uang_id,
+                'tanggal_transaksi' => $validated['tanggal_transaksi'],
+                'jenis'             => $validated['jenis'],
+                'mata_uang_id'      => $validated['mata_uang_id'],
                 'user_id'           => 'Admin',
-                'keterangan'        => $request->keterangan,
-                'dari_rekening_id'  => $request->dari_rekening_id,
-                'ke_rekening_id'    => $request->ke_rekening_id,
+                'keterangan'        => $validated['keterangan'] ?? null,
+                'dari_rekening_id'  => $validated['dari_rekening_id'] ?? null,
+                'ke_rekening_id'    => $validated['ke_rekening_id'] ?? null,
                 'referensi'         => $filePath,
             ]);
 
@@ -139,12 +145,12 @@ class DetailTransaksiController extends Controller
             $transaksi = Transaksi::findOrFail($detail->transaksi_id);
             $transaksi->update([
                 'total'             => $total,
-                'tanggal_transaksi' => $request->tanggal_transaksi
+                'tanggal_transaksi' => $validated['tanggal_transaksi']
             ]);
 
-            return redirect()->back()->with('success', 'Detail transaksi berhasil diperbarui!');
+            return Redirect::back()->with('success', 'Detail transaksi berhasil diperbarui!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal memperbarui detail transaksi: ' . $e->getMessage());
+            return Redirect::back()->with('error', 'Gagal memperbarui detail transaksi: ' . $e->getMessage());
         }
     }
 
@@ -165,9 +171,9 @@ class DetailTransaksiController extends Controller
                 'total' => $total
             ]);
 
-            return redirect()->back()->with('success', 'Detail transaksi berhasil dihapus!');
+            return Redirect::back()->with('success', 'Detail transaksi berhasil dihapus!');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus detail transaksi: ' . $e->getMessage());
+            return Redirect::back()->with('error', 'Gagal menghapus detail transaksi: ' . $e->getMessage());
         }
     }
 }

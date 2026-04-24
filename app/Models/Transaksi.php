@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Pemasok;
 use App\Models\MataUang;
 use App\Models\ArusKas;
 use App\Models\DetailTransaksi;
 
-class Transaksi extends Model
+/**
+ * @mixin \Eloquent
+ */
+class Transaksi extends BaseModel
 {
     protected $table = 'transaksi';
 

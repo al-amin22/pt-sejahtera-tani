@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AbsensiKaryawanController;
 use App\Http\Controllers\DetailTransaksiController;
@@ -24,7 +25,7 @@ use App\Http\Controllers\Staff\AbsensiController as StaffAbsensiController;
 use App\Http\Controllers\Staff\KaryawanController as StaffKaryawanController;
 use App\Http\Controllers\Staff\HasilProduksiController as StaffHasilProduksiController;
 Route::get('/', function () {
-    return view('welcome');
+    return View::make('welcome');
 });
 
 
@@ -141,7 +142,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 // ✅ Staff dashboard
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('staff.dashboard.index');
+        return View::make('staff.dashboard.index');
     })->name('dashboard');
 
     //transaksi
@@ -200,7 +201,7 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
 // ✅ Finance dashboard
 Route::middleware(['auth', 'role:finance'])->group(function () {
     Route::get('/finance/dashboard', function () {
-        return view('dashboard.finance');
+        return View::make('dashboard.finance');
     })->name('finance.dashboard');
 });
 

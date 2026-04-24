@@ -6,6 +6,8 @@ use App\Models\DetailJurnal;
 use App\Models\Jurnal;
 use App\Models\Coa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
 
 class DetailJurnalController extends Controller
 {
@@ -15,7 +17,7 @@ class DetailJurnalController extends Controller
         $jurnals = Jurnal::orderByDesc('tanggal_jurnal')->get();
         $coas = Coa::orderBy('kode')->get();
 
-        return view('detail_jurnal.index', compact('detail_jurnal', 'jurnals', 'coas'));
+        return View::make('detail_jurnal.index', compact('detail_jurnal', 'jurnals', 'coas'));
     }
 
     public function store(Request $request)
@@ -30,7 +32,7 @@ class DetailJurnalController extends Controller
 
         DetailJurnal::create($validated);
 
-        return redirect()->back()->with('success', 'Detail jurnal berhasil ditambahkan.');
+        return Redirect::back()->with('success', 'Detail jurnal berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
@@ -47,13 +49,13 @@ class DetailJurnalController extends Controller
 
         $detail->update($validated);
 
-        return redirect()->back()->with('success', 'Detail jurnal berhasil diperbarui.');
+        return Redirect::back()->with('success', 'Detail jurnal berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         DetailJurnal::findOrFail($id)->delete();
 
-        return redirect()->back()->with('success', 'Detail jurnal berhasil dihapus.');
+        return Redirect::back()->with('success', 'Detail jurnal berhasil dihapus.');
     }
 }
